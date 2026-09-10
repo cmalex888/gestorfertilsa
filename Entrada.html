@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/estilos.css">
+    <title>entrada</title>
+</head>
+<body>
+<div class="container-fluid">
+
+    <div class="container_nav">
+
+    <nav class="navbar navbar-expand-lg fixed-top" style="background-color: #0EADE6;" data-bs-theme="light">
+    <div class="container-fluid">
+    <a class="navbar-brand" href="#">Hola!</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="./menu.html">Modulos</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="./index.html">Salir</a>
+        </li>
+        
+    </div>
+  </div>
+</nav>
+</div>
+
+   
+    <div class="container">
+        
+    <div class="card-padre2">
+    <div class="card card-hijo2">
+    <div class="card-body">
+    <h5 class="card-title">REGISTRO DE ENTRADAS</h5>
+    
+      
+    <form id="formentrada">
+
+            <div class="mb-3">
+              <label for="fechamov" class="form-label">Fecha</label>
+              <input type="date" class="form-control" id="fecha" style="width: 150px;">
+            </div>
+
+            <div class="mb-3"> 
+              
+              <div class="row">
+
+                <div class="col-12 col-sm-4 col-md-4">
+                  <label for="Nit" class="form-label">NIT</label>
+                  <input type="text" class="form-control" id="Nit" style="width: 150px;">
+              
+                </div>
+
+                <div class="col-12 col-sm-8 col-md-8">
+                  <label for="razon" class="form-label">Razón Social</label>
+                  <input type="text" class="form-control" id="razon" readonly>
+              
+                </div>
+
+              </div>
+            
+            
+              <div class="mb-3"> 
+              
+              <div class="row">
+
+                <div class="col-12 col-sm-4 col-md-4">
+                  <label for="bodega" class="form-label">Bodega</label>
+                  <input type="text" class="form-control" id="bodega" style="width: 150px;">
+              
+               </div>
+
+                <div class="col-12 col-sm-8 col-md-8">
+                  <label for="descripB" class="form-label">Descripción Bodega</label>
+                  <input type="text" class="form-control" id="descripB" readonly>
+              
+                </div>
+
+              </div>
+
+              
+              
+              <div class="row">
+
+                <div class="col-4 col-sm-4 col-md-4">  
+                  <label for="Tipo" class="form-label">Tipo_Doc</label>
+                  
+                  <select id="siglas" class="form-select">
+                    <option value=""></option>
+                  </select>
+                                             
+                </div>
+
+                <div class="col-4 col-sm-4 col-md-4">  
+                  <label for="Descrip" class="form-label">Descrip_Doc</label>
+                  <input type="text" class="form-control" id="descrip_doc" readonly>
+              
+                </div>
+
+                <div class="col-4 col-sm-4 col-md-4">  
+                  <label for="Descrip" class="form-label">Consecutivo</label>
+                  <input type="text" class="form-control" id="csc">
+              
+                </div>
+            
+
+              </div>
+
+              <div class="mb-3">  
+                  <label for="Observaciones" class="form-label">Observaciones</label>
+                  <input type="text" class="form-control" id="obs" style="width: 500px; height: 50px;">
+              
+              </div>
+
+
+
+
+              <div class="row">
+
+                <div class="col-12 col-sm-4 col-md-4">  
+                  <label for="Ref" class="form-label">Referencia</label>
+                  <input type="text" class="form-control" id="Ref" style="width: 150px;">
+              
+                </div>
+
+                <div class="col-12 col-sm-8 col-md-8">  
+                  <label for="Descrip" class="form-label">Descripción</label>
+                  <input type="text" class="form-control" id="Descrip" readonly>
+              
+                </div>
+
+              </div>
+            
+
+              <div class="row">
+            
+
+                <div class="col-12 col-sm-4 col-md-4">  
+                  <label for="Cantidad" class="form-label">U.M.</label>
+                  <input type="text" class="form-control" id="um" style="width: 100px;" readonly>
+              
+                </div>
+            
+
+                <div class="col-12 col-sm-8 col-md-8">  
+                  <label for="Cantidad" class="form-label">Cantidad</label>
+                  <input type="number" class="form-control" id="Cantidad" min="1" style="width: 100px;">
+              
+                </div>
+              
+              </div>
+            
+            <br>
+
+            <div class="centrar_boton">
+            <button type="submit" class="btn btn-primary">Registrar</button>
+            <button type="reset" class="btn btn-danger">Limpiar</button>
+            </div>
+
+    </form>
+    </div>
+    <div class="mensaje" id="mensaje"></div>
+</div>
+</div>
+</div>
+    
+<br>
+
+<script>
+
+//Registro Razon social con base en el nit
+
+document.getElementById('Nit').addEventListener('change', () => {
+    const nites = document.getElementById('Nit').value;
+    
+    fetch('http://localhost/apis/rest/descripcliente.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nit: nites })
+    })
+
+
+    .then(res => res.json())
+    .then(data => {
+
+        
+        const divMensaje = document.getElementById("mensaje");
+        
+        if (data.success){
+          document.getElementById('razon').value = data.nit.razon;
+          divMensaje.textContent = "";
+
+        }else{
+          document.getElementById('razon').value = "";
+          divMensaje.textContent = "❌"+ data.mensaje;
+    
+        }
+        
+    })
+    .catch(error => console.error('Error:', error));
+  });
+
+   
+  //Registro descripción producto con base en la referencia
+  
+  document.getElementById('Ref').addEventListener('change', () => {
+    const Referen = document.getElementById('Ref').value;
+
+    fetch('http://localhost/apis/rest/descripcion.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ Refer: Referen })
+    })
+
+
+    .then(res => res.json())
+    .then(data => {
+
+        const divMensaje = document.getElementById("mensaje");
+        if (data.success){
+          document.getElementById('Descrip').value = data.referencia.descripcion;
+          document.getElementById('um').value = data.referencia.unidadmedida;
+          divMensaje.textContent = "";
+
+        }else{
+          document.getElementById('Descrip').value = "";
+          document.getElementById('um').value = " ";
+          divMensaje.textContent = "❌"+ data.mensaje;
+        }
+        
+    })
+    .catch(error => console.error('Error:', error));
+  });
+
+
+//Registro descripción Bodega con base en el código
+
+document.getElementById('bodega').addEventListener('change', () => {
+    const codbodega = document.getElementById('bodega').value;
+    
+    fetch('http://localhost/apis/rest/nombrebodega.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cod: codbodega })
+    })
+
+
+    .then(res => res.json())
+    .then(data => {
+
+        
+        const divMensaje = document.getElementById("mensaje");
+        if (data.success){
+          document.getElementById('descripB').value = data.codigo.nombre;
+          divMensaje.textContent = "";
+
+        }else{
+          document.getElementById('descripB').value = "";
+          divMensaje.textContent = "❌"+ data.mensaje;
+        }
+        
+    })
+    .catch(error => console.error('Error:', error));
+  });
+
+
+  //Botón limpiar
+
+  document.getElementById("formentrada").addEventListener("reset", async (e) => {
+  e.preventDefault();
+
+        const divMensaje = document.getElementById("mensaje");
+        const elemento = document.getElementById("fecha");
+        
+        
+        divMensaje.textContent = "";
+        document.getElementById("fecha").value = "";
+        document.getElementById("Nit").value = "";
+        document.getElementById("razon").value = "";
+        document.getElementById("bodega").value = "";
+        document.getElementById("descripB").value = "";
+        document.getElementById("siglas").value = "";
+        document.getElementById("descrip_doc").value = "";
+        document.getElementById("csc").value = "";              
+        document.getElementById("Ref").value = "";
+        document.getElementById("Descrip").value = "";
+        document.getElementById("um").value = "";
+        document.getElementById("obs").value = "";
+        document.getElementById("Cantidad").value = "";  
+        elemento.focus();
+
+
+
+
+});
+
+  // Código para lista desplegable del tipo de documento
+  const select = document.getElementById('siglas');
+  const input = document.getElementById('descrip_doc');
+  
+  // Variable global para almacenar los productos de la API
+  let listaDocumentos = [];
+
+  // Función para obtener los datos de la API al cargar la página
+  
+  async function cargarDocumentos() {
+    try {
+      // Reemplaza con la URL real de tu API
+      const respuesta = await fetch('http://localhost/apis/rest/Listatipos.php'); 
+      listaDocumentos = await respuesta.json(); 
+      
+      // Limpiar el select y agregar la opción por defecto
+      select.innerHTML = '<option value=""></option>';
+      
+      // Llenar el combobox con los datos de la API
+      listaDocumentos.forEach(producto => {
+        const option = document.createElement('option');
+        option.value = producto.sigla; // Guardamos el ID como valor
+        option.textContent = producto.sigla; // Mostramos la sigla del documento.
+        select.appendChild(option);
+      });
+    } catch (error) {
+      console.error('Error al cargar la API:', error);
+      select.innerHTML = '<option value="">Error al cargar productos</option>';
+    }
+  }
+
+  // Escuchar el cambio en el combobox
+  select.addEventListener('change', function() {
+    const idSeleccionado = select.value;
+    
+    // Buscar el documento completo en nuestra lista local usando el idocumentos
+    const documentoEncontrado = listaDocumentos.find(p => p.sigla == idSeleccionado);
+    
+    if (documentoEncontrado) {
+      // Asignar la propiedad que se requiere
+      input.value = `${documentoEncontrado.descripcionDoc}`;
+    } else {
+      input.value = ''; // Limpiar si selecciona la opción vacía
+    }
+  });
+
+  // Llamar a la función al iniciar
+  cargarDocumentos();
+        
+
+
+
+//Insertar registro entrada
+
+document.getElementById("formentrada").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const data = {
+    
+    fechar: document.getElementById("fecha").value,
+    prefijo: document.getElementById("siglas").value,
+    conse: document.getElementById("csc").value,
+    refer: document.getElementById("Ref").value,
+    descrip_pro: document.getElementById("Descrip").value,
+    unidad: document.getElementById("um").value,
+    centrada: document.getElementById("Cantidad").value,
+    obser: document.getElementById("obs").value,
+    bod: document.getElementById("bodega").value,
+    nites: document.getElementById("Nit").value
+
+    };
+
+  const respuesta = await fetch("http://localhost/apis/rest/insertarEntrada.php", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    //Convierte el objeto JavaScript a JSON.
+    body: JSON.stringify(data)
+  });
+
+  const resultado = await respuesta.json();
+  const divMensaje = document.getElementById("mensaje");
+
+      if (resultado.success) {
+          divMensaje.style.color = "Blue";
+          divMensaje.textContent = "✔️ Entrada registrada exitosamente";
+      } else {
+          divMensaje.style.color = "red";
+          divMensaje.textContent = "❌" + (resultado.error || resultado.mensaje);
+      }
+
+  
+  document.getElementById("Ref").value = "";
+  document.getElementById("Descrip").value = "";
+  document.getElementById("um").value = "";
+  document.getElementById("Cantidad").value = "";
+  document.getElementById("Ref").focus();
+
+}); 
+
+   
+
+
+</script>    
+</body>
+</html>
