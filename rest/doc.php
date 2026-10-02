@@ -17,7 +17,7 @@ if ($tipo === "" || $sigla === "" || $descripcion === "") {
     exit;
 }
 
-$pk = $db->buscarDocumento($sigla);
+$pk = $db->buscarDocumento($sigla, $tipo);
 
 if($pk){
     echo json_encode(["error" => "El tipo de documento ya está creado"]);

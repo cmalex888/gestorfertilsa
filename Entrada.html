@@ -73,7 +73,7 @@
 
                 <div class="col-12 col-sm-4 col-md-4">
                   <label for="bodega" class="form-label">Bodega</label>
-                  <input type="text" class="form-control" id="bodega" style="width: 150px;">
+                  <input type="text" class="form-control" id="bodega" style="width: 150px;" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase();">
               
                </div>
 
@@ -161,7 +161,7 @@
 
             <div class="centrar_boton">
             <button type="submit" class="btn btn-primary">Registrar</button>
-            <button type="reset" class="btn btn-danger">Limpiar</button>
+            <button type="reset" class="btn btn-danger">NuevaEntrada</button>
             </div>
 
     </form>
@@ -271,14 +271,20 @@ document.getElementById('bodega').addEventListener('change', () => {
   });
 
 
-  //Botón limpiar
+  //Botón ingresar nueva entrada
+
+  
 
   document.getElementById("formentrada").addEventListener("reset", async (e) => {
   e.preventDefault();
 
         const divMensaje = document.getElementById("mensaje");
         const elemento = document.getElementById("fecha");
-        
+        const consecutivo = document.getElementById("csc");
+        const fecha = document.getElementById("fecha");
+        const observaciones = document.getElementById("obs");
+        const bodegas = document.getElementById("bodega");
+        const nites = document.getElementById("Nit");
         
         divMensaje.textContent = "";
         document.getElementById("fecha").value = "";
@@ -295,11 +301,18 @@ document.getElementById('bodega').addEventListener('change', () => {
         document.getElementById("obs").value = "";
         document.getElementById("Cantidad").value = "";  
         elemento.focus();
-
-
+        ejecucion = false;
+        consecutivo.readOnly = false;
+        fecha.readOnly = false;
+        document.getElementById("siglas").disabled = false;
+        observaciones.readOnly = false;
+        bodegas.readOnly = false;
+        nites.readOnly = false;
 
 
 });
+
+
 
   // Código para lista desplegable del tipo de documento
   const select = document.getElementById('siglas');
@@ -322,7 +335,7 @@ document.getElementById('bodega').addEventListener('change', () => {
       // Llenar el combobox con los datos de la API
       listaDocumentos.forEach(producto => {
         const option = document.createElement('option');
-        option.value = producto.sigla; // Guardamos el ID como valor
+        option.value = producto.sigla; // Guardamos sigla valor
         option.textContent = producto.sigla; // Mostramos la sigla del documento.
         select.appendChild(option);
       });
@@ -353,54 +366,164 @@ document.getElementById('bodega').addEventListener('change', () => {
 
 
 
-//Insertar registro entrada
+// identificar si un documento esta registrado en la base de datos movimientos
 
-document.getElementById("formentrada").addEventListener("submit", async (e) => {
-  e.preventDefault();
+  async function revisarDocumentos(){
 
-  const data = {
+    let indicador = '0';
+
+    if (document.getElementById("siglas").value ==="" || document.getElementById("csc").value ===""){
+        indicador = '0';
+        console.log("Validación fallida: Uno de los campos está vacío. Indicador:", indicador);
+        return indicador;
     
-    fechar: document.getElementById("fecha").value,
-    prefijo: document.getElementById("siglas").value,
-    conse: document.getElementById("csc").value,
-    refer: document.getElementById("Ref").value,
-    descrip_pro: document.getElementById("Descrip").value,
-    unidad: document.getElementById("um").value,
-    centrada: document.getElementById("Cantidad").value,
-    obser: document.getElementById("obs").value,
-    bod: document.getElementById("bodega").value,
-    nites: document.getElementById("Nit").value
+    
+    }else{
 
-    };
+        
+        const data = {
+           
+          prefijo: document.getElementById("siglas").value,
+          conse: document.getElementById("csc").value
+    
+        };
 
-  const respuesta = await fetch("http://localhost/apis/rest/insertarEntrada.php", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    //Convierte el objeto JavaScript a JSON.
-    body: JSON.stringify(data)
-  });
+        const respuesta = await fetch("http://localhost/apis/rest/consultaDocumento.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        //Convierte el objeto JavaScript a JSON.
+        body: JSON.stringify(data)
+        });
 
-  const resultado = await respuesta.json();
-  const divMensaje = document.getElementById("mensaje");
+                     
+        if (!respuesta.ok) {
+            throw new Error('Error en la respuesta de la API');
+        }
+        
+        //else{
 
-      if (resultado.success) {
-          divMensaje.style.color = "Blue";
-          divMensaje.textContent = "✔️ Entrada registrada exitosamente";
-      } else {
-          divMensaje.style.color = "red";
-          divMensaje.textContent = "❌" + (resultado.error || resultado.mensaje);
-      }
+            const datos = await respuesta.json(); 
+            
+            console.log("Respuesta completa de la API (JSON):", datos);
+            
+            //document.getElementById("Cantidad").value = datos.codigo.exiteregistro ;
+            indicador = parseInt(datos.codigo.exiteregistro);
+            console.log("Valor final de indicador:", indicador);
+            return indicador;
+
+        //}
+
+    }
+  };
+  
+      document.getElementById("siglas").addEventListener("change", revisarDocumentos);
+
+      // Usamos 'input' para que detecte el cambio en tiempo real mientras escriben el consecutivo
+      document.getElementById("csc").addEventListener("input", revisarDocumentos);
+
+
+
+
+
+
+
+//Insertar registro entrada
+// 
+
+      let ejecucion = false;
+  
+      document.getElementById("formentrada").addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+      const indicador = await revisarDocumentos();
+      const divMensaje = document.getElementById("mensaje");
+      
+
+      // Se evalua el valor devuelto para tomar una acción
+      if (indicador !== 0 && indicador !== '0' &&  ejecucion === false) {
+        
+        // Se bloquea el registro si se cumple el condicional
+        const elemento = document.getElementById("siglas");          
+        divMensaje.style.color = "red"; // Aseguramos que se vea el texto de advertencia
+        divMensaje.textContent = "❌ ¡El documento "+document.getElementById("siglas").value+"-"+document.getElementById("csc").value+" ya existe en la base de datos";
+        document.getElementById("siglas").value = "";
+        document.getElementById("csc").value = "";
+        document.getElementById("Ref").value = "";
+        document.getElementById("Descrip").value = "";
+        document.getElementById("descrip_doc").value = "";
+        document.getElementById("obs").value = "";
+        document.getElementById("um").value = "";
+        document.getElementById("Cantidad").value = "";          
+        elemento.focus();      
+        
+           
+      // De lo contrario se realiza el registro del movimiento en la base de datos
+      }else{
 
   
-  document.getElementById("Ref").value = "";
-  document.getElementById("Descrip").value = "";
-  document.getElementById("um").value = "";
-  document.getElementById("Cantidad").value = "";
-  document.getElementById("Ref").focus();
+          const data = {
+    
+            fechar: document.getElementById("fecha").value,
+            prefijo: document.getElementById("siglas").value,
+            conse: document.getElementById("csc").value,
+            refer: document.getElementById("Ref").value,
+            descrip_pro: document.getElementById("Descrip").value,
+            unidad: document.getElementById("um").value,
+            centrada: document.getElementById("Cantidad").value,
+            obser: document.getElementById("obs").value,
+            bod: document.getElementById("bodega").value,
+            nites: document.getElementById("Nit").value
 
-}); 
+          };
 
-   
+      const respuesta = await fetch("http://localhost/apis/rest/insertarEntrada.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          //Convierte el objeto JavaScript a JSON.
+          body: JSON.stringify(data)
+      });
+
+      
+      const resultado = await respuesta.json();
+      const divMensaje = document.getElementById("mensaje");
+      const consecutivo = document.getElementById("csc");
+      const fecha = document.getElementById("fecha");
+      const observaciones = document.getElementById("obs");
+      const bodegas = document.getElementById("bodega");
+      const nites = document.getElementById("Nit");
+
+      
+
+          if (resultado.success) {
+                divMensaje.style.color = "Blue";
+                divMensaje.textContent = "✔️ Entrada registrada exitosamente";
+                document.getElementById("Ref").value = "";
+                document.getElementById("Descrip").value = "";
+                document.getElementById("um").value = "";
+                document.getElementById("Cantidad").value = "";
+                document.getElementById("Ref").focus();
+                consecutivo.readOnly = true;
+                fecha.readOnly = true;
+                document.getElementById("siglas").disabled = true;
+                observaciones.readOnly = true;
+                bodegas.readOnly = true;
+                nites.readOnly = true;               
+                ejecucion = true;
+                console.log(ejecucion);
+
+          }else {
+                divMensaje.style.color = "red";
+                divMensaje.textContent = "❌" + (resultado.error || resultado.mensaje); 
+                document.getElementById("fecha").focus();
+                  
+          
+          }
+
+    
+      }
+      });
+    
+ 
 
 
 </script>    

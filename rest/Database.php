@@ -77,11 +77,11 @@ class Database {
     }
 
 // MÉTODO PARA BUSCAR TIPO DE DOCUMENTO (DOCUMENTO)
-    public function buscarDocumento($sigla) {
+    public function buscarDocumento($sigla, $tipo) {
         try {
-            $sql = "SELECT * FROM documentos WHERE sigla = ?";
+            $sql = "SELECT * FROM documentos WHERE sigla = ? AND tipo = ?";
             $stmt = $this->conn->prepare($sql);
-            $stmt->execute([$sigla]);
+            $stmt->execute([$sigla, $tipo]);
             //Indica que quieres la fila devuelta como un arreglo asociativo
             return $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -179,7 +179,7 @@ class Database {
 
 
 
-//MÉTODO PARA CARGAR INFORMACIÓN A LISTA DESPLEGABLE MOVIMIENTOS
+//MÉTODO PARA CARGAR INFORMACIÓN A LISTA DESPLEGABLE ENTRADAS
     public function respuesta(){
         try {
             // Primero aseguramos que la conexión exista
@@ -214,12 +214,73 @@ class Database {
     }
 
 
-
-
-
-
-
+//MÉTODO PARA CARGAR INFORMACIÓN A LISTA DESPLEGABLE ENTRADAS
+    public function respuestaSalida(){
+        try {
+            // Primero aseguramos que la conexión exista
+            if ($this->conn == null) {
+                $this->conectar();
+            }
+                
+            // Consulta sql
+            $stmt = $this->conn->query("SELECT idocumentos, sigla, descripcionDoc FROM documentos WHERE tipo ='Salida'");
+            $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
+            // Enviar datos en formato JSON
+            echo json_encode($resultados);
+        } catch (Exception $e) {
+            echo json_encode(['error' => $e->getMessage()]);
+        }
+
+    }
+
+    // MÉTODO PARA AGREGAR UNA SALIDA (REGISTRO)
+    public function agregarSalida($idoc, $fecha, $prefijo, $csc, $ref, $descrip, $um, $cantidade, $cantidads, $observa, $bodegae, $nit) {
+        try {
+            $sql = "INSERT INTO movimientos (idmovimientos, fecha, documentos_sigla, consecutivo, productos_referencia, productos_descrip, productos_unidad, cantidade, cantidads, observaciones, bodega_codigo, cliente_nit) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute([$idoc, $fecha, $prefijo, $csc, $ref, $descrip, $um, $cantidade, $cantidads, $observa, $bodegae, $nit]);
+        return true;
+        } catch (PDOException $e) { //PDO es la forma moderna de conectarse a bd en PHP.
+            echo "Error al agregar salida: " . $e->getMessage();
+            return false;
+        }
+    }
+
+
+    //MÉTODO PARA CONSULTAR EL SALDO DE INVENTARIO DE UNA REFERENCIA POR UNA BODEGA
+    public function consultarSaldo($ref, $bodega) {
+        try {
+            $sql = "SELECT COALESCE((SUM(cantidade)-SUM(cantidads)),0) AS saldo FROM movimientos WHERE productos_referencia = ? AND bodega_codigo = ?";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute([$ref, $bodega]);
+            //Indica que quieres la fila devuelta como un arreglo asociativo
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    //MÉTODO PARA CONSULTAR EL SALDO DE INVENTARIO DE UNA REFERENCIA POR UNA BODEGA
+    public function consultarDocumento($sigla, $csc) {
+        try {
+            $sql = "SELECT EXISTS(SELECT 1 FROM movimientos WHERE documentos_sigla = ? AND consecutivo = ?) AS exiteregistro";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute([$sigla, $csc]);
+            //Indica que quieres la fila devuelta como un arreglo asociativo
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+
+
+
+
+
 
 
 }
