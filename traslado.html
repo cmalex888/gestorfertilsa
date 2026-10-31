@@ -35,13 +35,12 @@
    
     <div class="container">
         
-    <div class="card-padre3">
-    <div class="card card-hijo3">
+    <div class="card-padre2">
+    <div class="card card-hijo2">
     <div class="card-body">
     <h5 class="card-title">REGISTRO DE TRASLADOS</h5>
-    <br>
-      
-    <form>
+          
+    <form id="formtraslado">
             
             <div class="mb-3">
               <label for="fechamov" class="form-label">Fecha</label>
@@ -55,13 +54,15 @@
                        
                 <div class="col-12 col-sm-4 col-md-4">
                   <label for="Bodega" class="form-label">Bodega salida</label>
-                  <input type="text" class="form-control" id="Bodega" style="width: 100px;">
+                  <input type="text" class="form-control" id="Bodega" style="width: 100px;" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase();">
+                </div>
+
+                <div class="col-12 col-sm-8 col-md-8">
+                  <label for="DescripBodega" class="form-label">Des.Bodega salida</label>
+                  <input type="text" class="form-control" id="Descripbs" readonly>
                 </div>
               
-                <div class="col-12 col-sm-8 col-md-8">
-                  <label for="BodegaE" class="form-label">Bodega entrada</label>
-                  <input type="text" class="form-control" id="BodegaE" style="width: 100px;">
-                </div>
+                
               
               </div>
 
@@ -70,64 +71,615 @@
             <div class="mb-3">
             
               <div class="row">
-                        
-                       
+                                                        
+                
+
                 <div class="col-12 col-sm-4 col-md-4">
-                  <label for="DescripBodega" class="form-label">Des.Bodega salida</label>
-                  <input type="text" class="form-control" id="DescripBodega">
+                  <label for="BodegaE" class="form-label">Bodega entrada</label>
+                  <input type="text" class="form-control" id="BodegaE" style="width: 100px;" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase();">
                 </div>
-              
+
                 <div class="col-12 col-sm-8 col-md-8">
                   <label for="DescripBodegaE" class="form-label">Des.Bodega entrada</label>
-                  <input type="text" class="form-control" id="DescripBodegaE">
+                  <input type="text" class="form-control" id="Descripbe" readonly>
                 </div>
+
+
               
               </div>
 
             </div>
-            
-            
-            <div class="mb-3"> 
-              
-              <div class="row">
 
-                <div class="col-12 col-sm-4 col-md-4">
+            
+            <div class="row">
+
+                <div class="col-4 col-sm-4 col-md-4">  
+                  <label for="Tipo" class="form-label">Tipo_Doc</label>
+                  
+                  <select id="siglas" class="form-select">
+                    <option value=""></option>
+                  </select>
+                                             
+                </div>
+
+                <div class="col-4 col-sm-4 col-md-4">  
+                  <label for="Descrip" class="form-label">Descrip_Doc</label>
+                  <input type="text" class="form-control" id="descrip_doc" readonly>
+              
+                </div>
+
+                <div class="col-4 col-sm-4 col-md-4">  
+                  <label for="Descrip" class="form-label">Consecutivo</label>
+                  <input type="text" class="form-control" id="csc">
+              
+                </div>
+            
+
+              </div>
+
+              <div class="mb-3">  
+                  <label for="Observaciones" class="form-label">Observaciones</label>
+                  <input type="text" class="form-control" id="obs" style="width: 500px; height: 50px;">
+              
+              </div>
+
+           
+            
+            <div class="row">
+
+                <div class="col-12 col-sm-4 col-md-4">  
                   <label for="Ref" class="form-label">Referencia</label>
                   <input type="text" class="form-control" id="Ref" style="width: 150px;">
               
-               </div>
+                </div>
 
-                <div class="col-12 col-sm-4 col-md-4">
+                <div class="col-12 col-sm-8 col-md-8">  
                   <label for="Descrip" class="form-label">Descripción</label>
-                  <input type="text" class="form-control" id="Descrip">
+                  <input type="text" class="form-control" id="Descrip" readonly>
               
                 </div>
 
-              </div>
-
-            <div class="mb-3">  
-              <label for="Cantidad" class="form-label">U.M.</label>
-              <input type="text" class="form-control" id="um" style="width: 100px;">
-              
             </div>
 
-            <div class="mb-3">  
-              <label for="Cantidad" class="form-label">Cantidad</label>
-              <input type="number" class="form-control" id="Cantidad" style="width: 80px;">
+
+            <div class="row">
+            
+
+                <div class="col-4 col-sm-4 col-md-4">  
+                  <label for="Cantidad" class="form-label">U.M.</label>
+                  <input type="text" class="form-control" id="um" style="width: 100px;" readonly>
+              
+                </div>
+
+                <div class="col-4 col-sm-4 col-md-4">  
+                  <label for="Descrip" class="form-label">Saldo</label>
+                <input type="text" class="form-control" id="saldo" style="width: 100px;" readonly>
+              
+                </div>
+            
+
+                <div class="col-4 col-sm-4 col-md-4">  
+                  <label for="Cantidad" class="form-label">Cantidad</label>
+                  <input type="number" class="form-control" id="Cantidad" min="1" style="width: 100px;">
+              
+                </div>
+                
               
             </div>
-
+            <br>
             <div class="centrar_boton">
-            <button type="button" class="btn btn-primary">Registrar</button>
-            <button type="reset" class="btn btn-danger">Limpiar</button>
+            <button type="submit" class="btn btn-primary">Registrar</button>
+            <button type="reset" class="btn btn-danger">NuevoTraslado</button>
             </div>
 
     </form>
     </div>
+    <div class="mensaje" id="mensaje"></div>
 </div>
 </div>
 </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>    
+<script>
+
+
+//Registro descripción producto con base en la referencia
+  
+  document.getElementById('Ref').addEventListener('input', () => {
+    const Referen = document.getElementById('Ref').value;
+
+    fetch('http://localhost/apis/rest/descripcion.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ Refer: Referen })
+    })
+
+
+    .then(res => res.json())
+    .then(data => {
+
+        const divMensaje = document.getElementById("mensaje");
+        if (data.success){
+          document.getElementById('Descrip').value = data.referencia.descripcion;
+          document.getElementById('um').value = data.referencia.unidadmedida;
+          divMensaje.textContent = "";
+
+        }else{
+          document.getElementById('Descrip').value = "";
+          document.getElementById('um').value = " ";
+          //divMensaje.textContent = "❌"+ data.mensaje;
+        }
+        
+    })
+    .catch(error => console.error('Error:', error));
+  });
+
+
+
+//Registro descripción Bodega de salida con base en el código
+
+document.getElementById('Bodega').addEventListener('input', () => {
+    
+  const codbodega = document.getElementById('Bodega').value;
+    
+    fetch('http://localhost/apis/rest/nombrebodega.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cod: codbodega })
+    })
+
+    
+    .then(res => res.json())
+    .then(data => {
+
+        
+        const divMensaje = document.getElementById("mensaje");
+        if (data.success){
+          document.getElementById('Descripbs').value = data.codigo.nombre;
+          divMensaje.textContent = "";
+
+        }else{
+          document.getElementById('Descripbs').value = "";
+          //divMensaje.textContent = "❌"+ data.mensaje;
+        }
+        
+    })
+    .catch(error => console.error('Error:', error));
+  });
+
+
+//Registro descripción Bodega de Entrada con base en el código
+
+document.getElementById('BodegaE').addEventListener('input', () => {
+    
+  const codbodega = document.getElementById('BodegaE').value;
+    
+    fetch('http://localhost/apis/rest/nombrebodega.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cod: codbodega })
+    })
+
+    
+    .then(res => res.json())
+    .then(data => {
+
+        
+        const divMensaje = document.getElementById("mensaje");
+        if (data.success){
+          document.getElementById('Descripbe').value = data.codigo.nombre;
+          divMensaje.textContent = "";
+
+        }else{
+          document.getElementById('Descripbe').value = "";
+          //divMensaje.textContent = "❌"+ data.mensaje;
+        }
+        
+    })
+    .catch(error => console.error('Error:', error));
+  });
+
+
+
+  // Código para lista desplegable del tipo de documento
+
+  const select = document.getElementById('siglas');
+  const input = document.getElementById('descrip_doc');
+  
+  // Variable global para almacenar los productos de la API
+  let listaDocumentos = [];
+
+  // Función para obtener los datos de la API al cargar la página
+  
+  async function cargarDocumentos() {
+    try {
+      // Reemplaza con la URL real de tu API
+      const respuesta = await fetch('http://localhost/apis/rest/ListaTraslado.php'); 
+      listaDocumentos = await respuesta.json(); 
+      
+      // Limpiar el select y agregar la opción por defecto
+      select.innerHTML = '<option value=""></option>';
+      
+      // Llenar el combobox con los datos de la API
+      listaDocumentos.forEach(producto => {
+        const option = document.createElement('option');
+        option.value = producto.sigla; // Guardamos sigla valor
+        option.textContent = producto.sigla; // Mostramos la sigla del documento.
+        select.appendChild(option);
+      });
+    } catch (error) {
+      console.error('Error al cargar la API:', error);
+      select.innerHTML = '<option value="">Error al cargar productos</option>';
+    }
+  }
+
+  // Escuchar el cambio en el combobox
+  select.addEventListener('change', function() {
+    const idSeleccionado = select.value;
+    
+    // Buscar el documento completo en nuestra lista local usando el idocumentos
+    const documentoEncontrado = listaDocumentos.find(p => p.sigla == idSeleccionado);
+    
+    if (documentoEncontrado) {
+      // Asignar la propiedad que se requiere
+      input.value = `${documentoEncontrado.descripcionDoc}`;
+    } else {
+      input.value = ''; // Limpiar si selecciona la opción vacía
+    }
+  });
+
+  // Llamar a la función para cargar los valores a la lista.
+  cargarDocumentos();
+
+
+
+//Enviar datos de referencia y bodega para consular saldo
+
+  const referencia = document.getElementById('Ref');
+  const bodegas = document.getElementById('Bodega');
+  const saldos = document.getElementById('saldo');
+  
+  // Función asíncrona para consultar la API
+
+  async function consultarSaldo() {
+    const refer = referencia.value.trim();
+    const bod = bodegas.value.trim();
+
+    // Validamos que ambos campos tengan texto antes de consultar
+    if (refer === '' || bod === '') {
+        saldos.value = ''; // Limpiamos el resultado si falta un dato
+        return;
+    }
+
+    try {
+        saldos.value = 'Cargando...';
+
+        const data = {
+           
+          refer: document.getElementById("Ref").value,
+          bod: document.getElementById("Bodega").value
+    
+        };
+
+        const respuesta = await fetch("http://localhost/apis/rest/consultaSaldo.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        //Convierte el objeto JavaScript a JSON.
+        body: JSON.stringify(data)
+        });
+
+                     
+        if (!respuesta.ok) {
+            throw new Error('Error en la respuesta de la API');
+        }
+
+        const datos = await respuesta.json();
+
+        // Asignamos la propiedad que necesites del objeto JSON devuelto
+        // (Por ejemplo, asumamos que la API devuelve { nombre: "Laptop Dell" })
+        saldos.value = parseInt(datos.codigo.saldo);
+
+
+
+    } catch (error) {
+        console.error('Error al obtener los datos:', error);
+        saldos.value = 'Error al cargar información';
+    }
+}
+
+// Escuchamos el evento 'input' en ambos campos
+referencia.addEventListener('input', consultarSaldo);
+bodegas.addEventListener('input', consultarSaldo);
+
+
+
+
+// identificar si un documento esta registrado en la base de datos movimientos
+
+  async function revisarDocumentos(){
+
+    let indicador = '0';
+
+    if (document.getElementById("siglas").value ==="" || document.getElementById("csc").value ===""){
+        indicador = '0';
+        console.log("Validación fallida: Uno de los campos está vacío. Indicador:", indicador);
+        return indicador;
+    
+    
+    }else{
+
+        
+        const data = {
+           
+          prefijo: document.getElementById("siglas").value,
+          conse: document.getElementById("csc").value
+    
+        };
+
+        const respuesta = await fetch("http://localhost/apis/rest/consultaDocumento.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        //Convierte el objeto JavaScript a JSON.
+        body: JSON.stringify(data)
+        });
+
+                     
+        if (!respuesta.ok) {
+            throw new Error('Error en la respuesta de la API');
+        }
+        
+        //else{
+
+            const datos = await respuesta.json(); 
+            
+            console.log("Respuesta completa de la API (JSON):", datos);
+            
+            //document.getElementById("Cantidad").value = datos.codigo.exiteregistro ;
+            indicador = parseInt(datos.codigo.exiteregistro);
+            console.log("Valor final de indicador:", indicador);
+            return indicador;
+
+        //}
+
+    }
+  };
+  
+      document.getElementById("siglas").addEventListener("change", revisarDocumentos);
+
+      // Usamos 'input' para que detecte el cambio en tiempo real mientras escriben el consecutivo
+      document.getElementById("csc").addEventListener("input", revisarDocumentos);
+
+
+
+
+//Botón limpiar
+
+  document.getElementById("formtraslado").addEventListener("reset", async (e) => {
+  e.preventDefault();
+
+        const divMensaje = document.getElementById("mensaje");
+        const elemento = document.getElementById("fecha");
+        const consecutivo = document.getElementById("csc");
+        const fecha = document.getElementById("fecha");
+        const observaciones = document.getElementById("obs");
+        const bodegas = document.getElementById("Bodega");
+        const bodegase = document.getElementById("BodegaE");
+        
+
+        divMensaje.textContent = "";
+        document.getElementById("fecha").value = "";
+        document.getElementById("Bodega").value = "";
+        document.getElementById("BodegaE").value = "";
+        document.getElementById("Descripbs").value = "";
+        document.getElementById("Descripbe").value = "";
+        document.getElementById("siglas").value = "";
+        document.getElementById("descrip_doc").value = "";
+        document.getElementById("csc").value = "";              
+        document.getElementById("Ref").value = "";
+        document.getElementById("Descrip").value = "";
+        document.getElementById("um").value = "";
+        document.getElementById("obs").value = "";
+        document.getElementById("saldo").value = "";
+        document.getElementById("Cantidad").value = "";  
+        elemento.focus();
+        ejecucion = false;
+        consecutivo.readOnly = false;
+        fecha.readOnly = false;
+        document.getElementById("siglas").disabled = false;
+        observaciones.readOnly = false;
+        bodegas.readOnly = false;
+        bodegase.readOnly = false;
+
+
+
+});
+
+
+
+// INSERTAR INFORMACIÓN DEL TRASLADO A LA BASE DE DATOS.
+
+let ejecucion = false;
+
+document.getElementById("formtraslado").addEventListener("submit", async (e) => {
+    e.preventDefault();
+  
+
+const indicador = await revisarDocumentos();
+const divMensaje = document.getElementById("mensaje");
+
+if(document.getElementById("fecha").value === "" || document.getElementById("siglas").value === "" || document.getElementById("csc").value === "" || document.getElementById("Ref").value === "" || document.getElementById("Descrip").value === "" || document.getElementById("um").value === "" || document.getElementById("Cantidad").value === "" || document.getElementById("obs").value === "" || document.getElementById("Bodega").value === "" || document.getElementById("BodegaE").value === "" || document.getElementById("Descripbs").value === "" || document.getElementById("Descripbe").value ===""){
+    
+  divMensaje.style.color = "red";
+  divMensaje.textContent = "❌ Todos los campos son obligatorios";
+  document.getElementById("fecha").focus();
+          
+  
+
+  // Se evalua el valor devuelto para tomar una acción
+}else if (indicador !== 0 && indicador !== '0' &&  ejecucion === false) {
+    
+// Se bloquea el registro si se cumple el condicional
+    const elemento = document.getElementById("siglas");          
+    divMensaje.style.color = "red"; // Aseguramos que se vea el texto de advertencia
+    divMensaje.textContent = "❌ ¡El documento "+document.getElementById("siglas").value+"-"+document.getElementById("csc").value+" ya existe en la base de datos";
+    elemento.value = "";
+    document.getElementById("csc").value = "";
+    document.getElementById("Ref").value = "";
+    document.getElementById("Descrip").value = "";
+    document.getElementById("descrip_doc").value = "";
+    document.getElementById("obs").value = "";
+    document.getElementById("um").value = "";
+    document.getElementById("Cantidad").value = "";          
+    elemento.focus();      
+
+      
+        
+// De lo contrario se realiza el registro del movimiento en la base de datos
+}else{
+
+    const saldositem = document.getElementById("saldo").value;
+    const diferencia = parseInt(document.getElementById("Cantidad").value);
+                    
+    if (diferencia <= saldositem){
+
+
+      const data = {
+                 
+        fechar: document.getElementById("fecha").value,
+        prefijo: document.getElementById("siglas").value,
+        conse: document.getElementById("csc").value,
+        refer: document.getElementById("Ref").value,
+        descrip_pro: document.getElementById("Descrip").value,
+        unidad: document.getElementById("um").value,
+        centrada: document.getElementById("Cantidad").value,
+        obser: document.getElementById("obs").value,
+        bod: document.getElementById("Bodega").value,
+        nites: '905495606'
+
+      };
+
+                    
+      const respuesta = await fetch("http://localhost/apis/rest/insertarSalida.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      //Convierte el objeto JavaScript a JSON.
+      body: JSON.stringify(data)
+      });
+
+      const resultado = await respuesta.json();
+      const divMensaje = document.getElementById("mensaje");
+      //const consecutivo = document.getElementById("csc");
+      //const fecha = document.getElementById("fecha");
+      //const observaciones = document.getElementById("obs");
+      
+
+      if (resultado.success) {
+        divMensaje.style.color = "Blue";
+        divMensaje.textContent = "✔️ ok";
+        //document.getElementById("Ref").value = "";
+        //document.getElementById("saldo").value = "";
+        //document.getElementById("Descrip").value = "";
+        //document.getElementById("um").value = "";
+        //document.getElementById("Cantidad").value = "";
+        //document.getElementById("Ref").focus();
+        //consecutivo.readOnly = true;
+        //fecha.readOnly = true;
+        //document.getElementById("siglas").disabled = true;
+        //observaciones.readOnly = true;
+        //bodegas.readOnly = true;
+        //nites.readOnly = true;
+        
+
+
+      
+      } else {
+        divMensaje.style.color = "red";
+        divMensaje.textContent = "❌" + (resultado.error || resultado.mensaje);
+                                    
+        }
+
+    }else{
+
+      const divMensaje = document.getElementById("mensaje");    
+      document.getElementById("Ref").value = "";
+      document.getElementById("saldo").value = "";
+      document.getElementById("Descrip").value = "";
+      document.getElementById("um").value = "";
+      document.getElementById("Cantidad").value = "";
+      divMensaje.style.color = "red";
+      divMensaje.textContent = "❌ No hay inventario disponible!";
+      document.getElementById("Ref").focus(); 
+
+    };
+
+
+
+  
+    const data1 = {
+
+          fechar: document.getElementById("fecha").value,
+          prefijo: document.getElementById("siglas").value,
+          conse: document.getElementById("csc").value,
+          refer: document.getElementById("Ref").value,
+          descrip_pro: document.getElementById("Descrip").value,
+          unidad: document.getElementById("um").value,
+          centrada: document.getElementById("Cantidad").value,
+          obser: document.getElementById("obs").value,
+          bod: document.getElementById("BodegaE").value,
+          nites: '905495606'
+
+        };
+
+    const respuesta1 = await fetch("http://localhost/apis/rest/insertarEntrada.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        //Convierte el objeto JavaScript a JSON.
+        body: JSON.stringify(data1)
+    });
+
+  
+    const resultado1 = await respuesta1.json();
+    const divMensaje = document.getElementById("mensaje");
+    const consecutivo = document.getElementById("csc");
+    const fecha = document.getElementById("fecha");
+    const observaciones = document.getElementById("obs");
+    const bodegase = document.getElementById("BodegaE");
+    const bodegas = document.getElementById("Bodega");
+      
+      
+
+        if (resultado1.success) {
+              divMensaje.style.color = "Blue";
+              divMensaje.textContent = "✔️ Traslado registrado exitosamente";
+              document.getElementById("Ref").value = "";
+              document.getElementById("Descrip").value = "";
+              document.getElementById("um").value = "";
+              document.getElementById("Cantidad").value = "";
+              document.getElementById("Ref").focus();
+              consecutivo.readOnly = true;
+              fecha.readOnly = true;
+              document.getElementById("siglas").disabled = true;
+              observaciones.readOnly = true;
+              bodegase.readOnly = true;
+              bodegas.readOnly = true;               
+              ejecucion = true;
+              //console.log(ejecucion);
+
+        }else {
+              divMensaje.style.color = "red";
+              divMensaje.textContent = "❌" + (resultado.error || resultado.mensaje); 
+              document.getElementById("fecha").focus();
+            
+      
+        }
+
+
+}
+
+
+});
+
+
+
+</script>    
 </body>
 </html>

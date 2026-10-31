@@ -214,7 +214,7 @@ class Database {
     }
 
 
-//MÉTODO PARA CARGAR INFORMACIÓN A LISTA DESPLEGABLE ENTRADAS
+//MÉTODO PARA CARGAR INFORMACIÓN A LISTA DESPLEGABLE SALIDAS
     public function respuestaSalida(){
         try {
             // Primero aseguramos que la conexión exista
@@ -262,7 +262,7 @@ class Database {
         }
     }
 
-    //MÉTODO PARA CONSULTAR EL SALDO DE INVENTARIO DE UNA REFERENCIA POR UNA BODEGA
+    //MÉTODO PARA CONSULTAR SI UN DOCUMENTO YA EXISTE.
     public function consultarDocumento($sigla, $csc) {
         try {
             $sql = "SELECT EXISTS(SELECT 1 FROM movimientos WHERE documentos_sigla = ? AND consecutivo = ?) AS exiteregistro";
@@ -275,6 +275,103 @@ class Database {
             return false;
         }
     }
+
+
+
+    //MÉTODO PARA CARGAR INFORMACIÓN A LISTA DESPLEGABLE TRASLADOS
+    public function respuestaTraslado(){
+        try {
+            // Primero aseguramos que la conexión exista
+            if ($this->conn == null) {
+                $this->conectar();
+            }
+                
+            // Consulta sql
+            $stmt = $this->conn->query("SELECT idocumentos, sigla, descripcionDoc FROM documentos WHERE tipo ='Traslado'");
+            $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+            // Enviar datos en formato JSON
+            echo json_encode($resultados);
+        } catch (Exception $e) {
+            echo json_encode(['error' => $e->getMessage()]);
+        }
+
+    }
+
+    //MÉTODO PARA CONSULTAR LISTADO DE INVENTARIO POR UNA BODEGA
+    public function consultarDisponible($bodega) {
+        try {
+            $sql = "SELECT productos_referencia, productos_descrip, productos_unidad, bodega_codigo, (SUM(cantidade)-SUM(cantidads)) AS saldo FROM movimientos WHERE bodega_codigo = ? GROUP BY productos_referencia, productos_descrip, productos_unidad, bodega_codigo HAVING (SUM(cantidade)-SUM(cantidads)) > 0 ORDER BY productos_descrip ASC";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute([$bodega]);
+            //Devuelve un array con todas las filas encontradas
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+
+    //MÉTODO PARA CONSULTAR LISTADO DE INVENTARIO POR UNA BODEGA AL CORTE DE UNA FECHA
+    public function consultarDisponiblecorte($bodega, $fecha) {
+        try {
+            $sql = "SELECT productos_referencia, productos_descrip, productos_unidad, bodega_codigo, (SUM(cantidade)-SUM(cantidads)) AS saldo FROM movimientos WHERE bodega_codigo = ? AND fecha <= ? GROUP BY productos_referencia, productos_descrip, productos_unidad, bodega_codigo HAVING (SUM(cantidade)-SUM(cantidads)) > 0 ORDER BY productos_descrip ASC";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute([$bodega, $fecha]);
+            //Devuelve un array con todas las filas encontradas
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+
+    //MÉTODO PARA CONSULTAR MOVIMIRNOS DE INVENTARIO POR UNA BODEGA A UN PERIODO DE TIEMPO
+    public function consultarMovimientos($fechai, $bodega, $ref, $fechain, $fechaf, $bodegaf, $reff) {
+        try {
+            $sql = "SELECT fecha, documentos_sigla, consecutivo, productos_referencia, productos_descrip, bodega_codigo, observaciones, cantidade, cantidads, CAST( COALESCE((SELECT SUM(CAST(m2.cantidade AS SIGNED)) - SUM(CAST(m2.cantidads AS SIGNED)) FROM movimientos m2 WHERE m2.fecha < ? AND m2.bodega_codigo = ? AND m2.productos_referencia = ? ), 0 ) AS SIGNED)+ SUM(CAST(cantidade AS SIGNED) - CAST(cantidads AS SIGNED)) OVER (ORDER BY fecha ASC, idmovimientos ASC ) AS valor_acumulado FROM movimientos WHERE fecha BETWEEN ? AND ? AND bodega_codigo = ? AND productos_referencia = ? ORDER BY fecha ASC, idmovimientos ASC;";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute([$fechai, $bodega, $ref, $fechain, $fechaf, $bodegaf, $reff]);
+            //Devuelve un array con todas las filas encontradas
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+
+    //MÉTODO PARA CONSULTAR CONSUMO POR UNA BODEGA A UN PERIODO DE TIEMPO
+    public function consultarConsumos($bodega, $fechai, $fechaf) {
+        try {
+            $sql = "SELECT productos_referencia, productos_descrip, productos_unidad, bodega_codigo, SUM(cantidads) AS Consumo FROM movimientos WHERE documentos_sigla = 'FET' AND bodega_codigo = ? AND fecha >= ? AND fecha <= ? GROUP BY productos_referencia, productos_descrip, productos_unidad, bodega_codigo HAVING SUM(cantidads) > 0 ORDER BY productos_descrip ASC";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute([$bodega, $fechai, $fechaf]);
+            //Devuelve un array con todas las filas encontradas
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

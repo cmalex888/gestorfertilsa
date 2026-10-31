@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/reportes.css"> 
+    <title>reporte_saldos_al_corte</title>
+</head>
+<body>
+
+<div>
+        <h1>GESTOR DE INVENTARIO FERTILSA S.A.S.</h1>
+</div>
+
+<div class="contenedor">
+
+     
+    
+    <div class = "card-1"> 
+      
+        
+        <div class="row">
+        
+        <div class="col-12 col-sm-4 col-md-4">
+            <label for="bodega" class="form-label">Fecha inicial</label>
+            <input type="date" class="form-control" id="fecha" style="width: 150px;">
+        </div>
+
+
+        
+        <div class="col-12 col-sm-8 col-md-8">
+            <label for="bodega" class="form-label">Fecha Final</label>
+            <input type="date" class="form-control" id="fechaf" style="width: 150px;">
+        </div>
+
+        </div>
+
+        <br>
+
+        <div class="row">
+
+        <div class="col-12 col-sm-4 col-md-4">        
+            <input type="text" class="form-control" id="bodega" style="width: 150px;"style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase();" placeholder="Código bodega">              
+        </div>
+
+        <div class="col-12 col-sm-8 col-md-8">        
+            <input type="text" class="form-control" id="descripB" readonly placeholder="Des.Bodega">              
+        </div>
+   
+        </div>
+
+        <br>
+
+        <div class="row">
+
+        <div class="col-12 col-sm-4 col-md-4">  
+        <input type="text" class="form-control" id="Ref" style="width: 150px;" placeholder="Referencia">          
+        </div>
+
+        <div class="col-12 col-sm-8 col-md-8">  
+        <input type="text" class="form-control" id="Descrip" readonly placeholder="Descrp referencia">
+        </div>
+
+        </div>
+
+    <br>
+
+    <div>
+            <button id = "buscar" type="submit" class="btn btn-primary">Cargar</button>
+            <button id="btn-exportar" class="btn btn-primary">📊 Exportar a Excel</button>
+            <button id="limpiar" type="reset" class="btn btn-danger">Limpiar</button>
+            <a href="./reportes.html" id="volver" type="reset" class="btn btn-danger">Volver</a>
+    </div>
+
+    
+
+    </div>
+
+    
+    <div>
+    
+    <table id = "tabla">
+
+        <thead>
+            <tr><th colspan="10"><h5>Listado movimientos a un periodo</h5></th></tr>
+            <tr>
+                
+                <th>Fecha</th>
+                <th>Tipo</th>
+                <th>Csc</th>
+                <th>Ref</th>
+                <th>Descripcion</th>
+                <th>Bodega</th>
+                <th>Obs</th>
+                <th>Entrada</th>
+                <th>Salida</th>
+                <th>Saldo</th>            
+            </tr>
+        </thead>
+
+        
+        <tbody id="datos-tabla">
+            <tr>
+                <td colspan="10">Introduce las fechas, la referencia, el código de bodega y haz clic en Cargar.</td>
+            </tr>
+        </tbody>
+
+
+    </table>
+  
+    </div>
+
+</div>
+     
+
+    <div class="mensaje" id="mensaje"></div>
+
+
+<script>
+
+//Registro descripción producto con base en la referencia
+  
+  document.getElementById('Ref').addEventListener('input', () => {
+    const Referen = document.getElementById('Ref').value;
+
+    fetch('http://localhost/apis/rest/descripcion.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ Refer: Referen })
+    })
+
+
+    .then(res => res.json())
+    .then(data => {
+
+        const divMensaje = document.getElementById("mensaje");
+        if (data.success){
+          document.getElementById('Descrip').value = data.referencia.descripcion;
+          document.getElementById('um').value = data.referencia.unidadmedida;
+          divMensaje.textContent = "";
+
+        }else{
+          document.getElementById('Descrip').value = "";
+          document.getElementById('um').value = " ";
+          //divMensaje.textContent = "❌"+ data.mensaje;
+        }
+        
+    })
+    .catch(error => console.error('Error:', error));
+  });
+
+
+//Registro descripción Bodega con base en el código
+
+document.getElementById('bodega').addEventListener('input', () => {
+    
+  const codbodega = document.getElementById('bodega').value;
+    
+    fetch('http://localhost/apis/rest/nombrebodega.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cod: codbodega })
+    })
+
+    
+    .then(res => res.json())
+    .then(data => {
+
+        
+        const divMensaje = document.getElementById("mensaje");
+        if (data.success){
+          document.getElementById('descripB').value = data.codigo.nombre;
+          divMensaje.textContent = "";
+
+        }else{
+          document.getElementById('descripB').value = "";
+          //divMensaje.textContent = "❌"+ data.mensaje;
+        }
+        
+    })
+    .catch(error => console.error('Error:', error));
+  });
+
+
+//Codigo para el botón cargar
+
+const urlAPI = 'http://localhost/apis/rest/movimientosInventario.php';
+
+async function consultarInventario() {
+  const inputBodega = document.getElementById('bodega');
+  const inputrefer = document.getElementById('Ref');
+  const inputfecha = document.getElementById('fecha');
+  const inputfechaf = document.getElementById('fechaf');
+  const tabla = document.getElementById('datos-tabla');
+  const btnExportar = document.getElementById('btn-exportar');
+  
+  const valorBusqueda = inputBodega.value.trim();
+  const valorRef = inputrefer.value.trim();
+  const valorfecha = inputfecha.value.trim();
+  const valorfechaf = inputfechaf.value.trim();
+
+  if (valorBusqueda === "" || valorfecha === "" || valorfechaf === "" || valorfecha > valorfechaf || valorRef === "") {
+    alert("Por favor, ingresa la referencia, el código de bodega o las fechas correctas");
+    return;
+  }
+
+  tabla.innerHTML = '<tr><td colspan="10">Buscando información en el servidor...</td></tr>';
+  btnExportar.style.display = 'none'; // Ocultar botón de exportar durante la nueva búsqueda
+
+  const parametrosPost = { bod: valorBusqueda, fecha: valorfecha, fechaf: valorfechaf, refer: valorRef};
+
+  try {
+    const respuesta = await fetch(urlAPI, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(parametrosPost)
+    });
+
+    const resultado = await respuesta.json();
+    tabla.innerHTML = '';
+
+    if (resultado.success && Array.isArray(resultado.inventario) && resultado.inventario.length > 0) {
+      
+      resultado.inventario.forEach(producto => {
+        const fila = document.createElement('tr');
+
+        // Creamos y asignamos las 10 celdas
+        const campos = [
+          producto.fecha,
+          producto.documentos_sigla,
+          producto.consecutivo,
+          producto.productos_referencia,
+          producto.productos_descrip,          
+          producto.bodega_codigo,
+          producto.observaciones,
+          producto.cantidade,
+          producto.cantidads,
+          producto.valor_acumulado,
+        ];
+
+        campos.forEach(texto => {
+          const celda = document.createElement('td');
+          celda.textContent = texto;
+          fila.appendChild(celda);
+        });
+
+        tabla.appendChild(fila);
+      });
+
+      // Muestra el botón de exportar si encontramos registros
+      btnExportar.style.display = 'inline-block';
+
+    } else {
+      const mensajeError = resultado.mensaje || 'No se encontraron productos para esta bodega.';
+      tabla.innerHTML = `<tr><td colspan="10" style="color:orange;">${mensajeError}</td></tr>`;
+    }
+
+  } catch (error) {
+    console.error('Error en la petición POST:', error);
+    tabla.innerHTML = `<tr><td colspan="10" style="color:red;">Error crítico al conectar con el servidor.</td></tr>`;
+  }
+}
+
+
+// botón para restablecer toda la interfaz
+function limpiarPantalla() {
+  const inputBodega = document.getElementById('bodega');
+  const inputrefer = document.getElementById('Ref');
+  const inputfecha = document.getElementById('fecha');
+  const inputfechaf = document.getElementById('fechaf');
+  const inputDescrip = document.getElementById('descripB');
+  const inputDescripb = document.getElementById('Descrip');
+  const tabla = document.getElementById('datos-tabla');
+  const btnExportar = document.getElementById('btn-exportar');
+
+  if (inputBodega) inputBodega.value = '';
+  if (inputDescrip) inputDescrip.value = '';
+  if (inputrefer) inputrefer.value = '';
+  if (inputDescripb) inputDescripb.value = '';
+  if (inputfecha) inputfecha.value = '';
+  if (inputfechaf) inputfechaf.value = '';
+  if (btnExportar) btnExportar.style.display = 'none';
+  
+  if (tabla) {
+    tabla.innerHTML = `
+      <tr>
+        <td colspan="10" style="color: gray;">Introduce un código de bodega y haz clic en Cargar.</td>
+      </tr>
+    `;
+  }
+  console.log("Interfaz restablecida correctamente.");
+}
+
+
+// Función encargada de transformar la tabla HTML a un archivo descargable
+function exportarAExcel() {
+  const tabla = document.getElementById('tabla');
+  const filas = tabla.querySelectorAll('tr');
+  let contenidoCsv = "";
+
+  filas.forEach(fila => {
+    const celdas = fila.querySelectorAll('th, td');
+    const datosFila = Array.from(celdas).map(celda => {
+      // Limpiamos comillas del texto y envolvemos el valor entre comillas dobles para evitar errores con las comas
+      let texto = celda.textContent.replace(/"/g, '""');
+      return `"${texto}"`;
+    });
+    // Unimos las celdas usando punto y coma (;), que es el separador por defecto de Excel en español
+    contenidoCsv += datosFila.join(";") + "\r\n";
+  });
+
+  // Agregar el BOM UTF-8 (\uFEFF) para que Excel reconozca correctamente las tildes y la letra Ñ
+  const blob = new Blob(["\uFEFF" + contenidoCsv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  
+  // Crear un enlace temporal para forzar la descarga en el navegador
+  const enlaceDescarga = document.createElement("a");
+  enlaceDescarga.href = url;
+  
+  // Nombre del archivo final
+  const codigoBodega = document.getElementById('bodega').value.trim() || 'inventario';
+  enlaceDescarga.setAttribute("download", `Movimientos_bodega_${codigoBodega}.csv`);
+  
+  document.body.appendChild(enlaceDescarga);
+  enlaceDescarga.click();
+  document.body.removeChild(enlaceDescarga);
+}
+
+// Configurar los escuchadores de eventos
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('buscar').addEventListener('click', consultarInventario);
+  document.getElementById('limpiar').addEventListener('click', limpiarPantalla); // Escuchador de limpiar
+  document.getElementById('btn-exportar').addEventListener('click', exportarAExcel);
+
+  document.getElementById('bodega').addEventListener('keypress', (evento) => {
+    if (evento.key === 'Enter') consultarInventario();
+  });
+});
+
+
+
+
+</script>
+
+
+    
+</body>
+</html>

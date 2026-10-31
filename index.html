@@ -73,11 +73,28 @@
     if (data.success) {
         divMensaje.style.color = "green";
         divMensaje.textContent = "✔️ Login exitoso. Bienvenido " + data.usuario.nombre;
+        window.location.href = "menu.html";
+        
     } else {
         divMensaje.style.color = "red";
         divMensaje.textContent = "❌ El login no se encuentra creado " + data.mensaje;
     }
     });
+
+    function enviarDato() {
+            
+        // 1. Obtener el valor del input
+            const valor = document.getElementById("mensaje").value;
+    
+            // 2. Guardarlo en localStorage con un nombre clave
+            localStorage.setItem("datoGuardado", valor);
+    
+            // 3. Cambiar a la segunda página
+            window.location.href = "menu.html";
+    }
+    
+
+
 
 </script>
 

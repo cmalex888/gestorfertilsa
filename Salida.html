@@ -184,7 +184,7 @@
 
 //Registro Razon social con base en el nit
 
-document.getElementById('Nit').addEventListener('change', () => {
+document.getElementById('Nit').addEventListener('input', () => {
     const nites = document.getElementById('Nit').value;
     
     fetch('http://localhost/apis/rest/descripcliente.php', {
@@ -206,7 +206,7 @@ document.getElementById('Nit').addEventListener('change', () => {
 
         }else{
           document.getElementById('razon').value = "";
-          divMensaje.textContent = "❌"+ data.mensaje;
+          //divMensaje.textContent = "❌"+ data.mensaje;
     
         }
         
@@ -217,7 +217,7 @@ document.getElementById('Nit').addEventListener('change', () => {
    
   //Registro descripción producto con base en la referencia
   
-  document.getElementById('Ref').addEventListener('change', () => {
+  document.getElementById('Ref').addEventListener('input', () => {
     const Referen = document.getElementById('Ref').value;
 
     fetch('http://localhost/apis/rest/descripcion.php', {
@@ -239,7 +239,7 @@ document.getElementById('Nit').addEventListener('change', () => {
         }else{
           document.getElementById('Descrip').value = "";
           document.getElementById('um').value = " ";
-          divMensaje.textContent = "❌"+ data.mensaje;
+          //divMensaje.textContent = "❌"+ data.mensaje;
         }
         
     })
@@ -249,8 +249,9 @@ document.getElementById('Nit').addEventListener('change', () => {
 
 //Registro descripción Bodega con base en el código
 
-document.getElementById('bodega').addEventListener('change', () => {
-    const codbodega = document.getElementById('bodega').value;
+document.getElementById('bodega').addEventListener('input', () => {
+    
+  const codbodega = document.getElementById('bodega').value;
     
     fetch('http://localhost/apis/rest/nombrebodega.php', {
         method: 'POST',
@@ -258,7 +259,7 @@ document.getElementById('bodega').addEventListener('change', () => {
         body: JSON.stringify({ cod: codbodega })
     })
 
-
+    
     .then(res => res.json())
     .then(data => {
 
@@ -270,12 +271,17 @@ document.getElementById('bodega').addEventListener('change', () => {
 
         }else{
           document.getElementById('descripB').value = "";
-          divMensaje.textContent = "❌"+ data.mensaje;
+          //divMensaje.textContent = "❌"+ data.mensaje;
         }
         
     })
     .catch(error => console.error('Error:', error));
   });
+
+  
+
+
+
 
 
   //Botón limpiar
@@ -333,6 +339,7 @@ document.getElementById('bodega').addEventListener('change', () => {
       // Reemplaza con la URL real de tu API
       const respuesta = await fetch('http://localhost/apis/rest/ListaSalidas.php'); 
       listaDocumentos = await respuesta.json(); 
+      
       
       // Limpiar el select y agregar la opción por defecto
       select.innerHTML = '<option value=""></option>';
@@ -503,7 +510,7 @@ let ejecucion = false;
 document.getElementById("formsalida").addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  if(document.getElementById("fecha").value === "" || document.getElementById("siglas").value === "" || document.getElementById("csc").value === "" || document.getElementById("Ref").value === "" || document.getElementById("Descrip").value === "" || document.getElementById("um").value === "" || document.getElementById("Cantidad").value === "" || document.getElementById("obs").value === "" || document.getElementById("bodega").value === "" || document.getElementById("Nit").value === ""){
+  if(document.getElementById("fecha").value === "" || document.getElementById("siglas").value === "" || document.getElementById("csc").value === "" || document.getElementById("Ref").value === "" || document.getElementById("Descrip").value === "" || document.getElementById("um").value === "" || document.getElementById("Cantidad").value === "" || document.getElementById("obs").value === "" || document.getElementById("bodega").value === "" || document.getElementById("Nit").value === "" || document.getElementById("descripB").value ==="" || document.getElementById("razon").value ==="" ){
         const divMensaje = document.getElementById("mensaje");
         divMensaje.style.color = "red";
         divMensaje.textContent = "❌ Todos los campos son obligatorios";

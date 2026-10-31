@@ -177,7 +177,7 @@
 
 //Registro Razon social con base en el nit
 
-document.getElementById('Nit').addEventListener('change', () => {
+document.getElementById('Nit').addEventListener('input', () => {
     const nites = document.getElementById('Nit').value;
     
     fetch('http://localhost/apis/rest/descripcliente.php', {
@@ -199,7 +199,7 @@ document.getElementById('Nit').addEventListener('change', () => {
 
         }else{
           document.getElementById('razon').value = "";
-          divMensaje.textContent = "❌"+ data.mensaje;
+          //divMensaje.textContent = "❌"+ data.mensaje;
     
         }
         
@@ -210,7 +210,7 @@ document.getElementById('Nit').addEventListener('change', () => {
    
   //Registro descripción producto con base en la referencia
   
-  document.getElementById('Ref').addEventListener('change', () => {
+  document.getElementById('Ref').addEventListener('input', () => {
     const Referen = document.getElementById('Ref').value;
 
     fetch('http://localhost/apis/rest/descripcion.php', {
@@ -232,7 +232,7 @@ document.getElementById('Nit').addEventListener('change', () => {
         }else{
           document.getElementById('Descrip').value = "";
           document.getElementById('um').value = " ";
-          divMensaje.textContent = "❌"+ data.mensaje;
+          //divMensaje.textContent = "❌"+ data.mensaje;
         }
         
     })
@@ -242,7 +242,7 @@ document.getElementById('Nit').addEventListener('change', () => {
 
 //Registro descripción Bodega con base en el código
 
-document.getElementById('bodega').addEventListener('change', () => {
+document.getElementById('bodega').addEventListener('input', () => {
     const codbodega = document.getElementById('bodega').value;
     
     fetch('http://localhost/apis/rest/nombrebodega.php', {
@@ -263,7 +263,7 @@ document.getElementById('bodega').addEventListener('change', () => {
 
         }else{
           document.getElementById('descripB').value = "";
-          divMensaje.textContent = "❌"+ data.mensaje;
+          //divMensaje.textContent = "❌"+ data.mensaje;
         }
         
     })
@@ -430,99 +430,107 @@ document.getElementById('bodega').addEventListener('change', () => {
 //Insertar registro entrada
 // 
 
-      let ejecucion = false;
+  let ejecucion = false;
   
-      document.getElementById("formentrada").addEventListener("submit", async (e) => {
-          e.preventDefault();
 
-      const indicador = await revisarDocumentos();
-      const divMensaje = document.getElementById("mensaje");
-      
-
-      // Se evalua el valor devuelto para tomar una acción
-      if (indicador !== 0 && indicador !== '0' &&  ejecucion === false) {
-        
-        // Se bloquea el registro si se cumple el condicional
-        const elemento = document.getElementById("siglas");          
-        divMensaje.style.color = "red"; // Aseguramos que se vea el texto de advertencia
-        divMensaje.textContent = "❌ ¡El documento "+document.getElementById("siglas").value+"-"+document.getElementById("csc").value+" ya existe en la base de datos";
-        document.getElementById("siglas").value = "";
-        document.getElementById("csc").value = "";
-        document.getElementById("Ref").value = "";
-        document.getElementById("Descrip").value = "";
-        document.getElementById("descrip_doc").value = "";
-        document.getElementById("obs").value = "";
-        document.getElementById("um").value = "";
-        document.getElementById("Cantidad").value = "";          
-        elemento.focus();      
-        
-           
-      // De lo contrario se realiza el registro del movimiento en la base de datos
-      }else{
-
+  document.getElementById("formentrada").addEventListener("submit", async (e) => {
+        e.preventDefault();
   
-          const data = {
+  const indicador = await revisarDocumentos();
+  const divMensaje = document.getElementById("mensaje");
+
+  if(document.getElementById("fecha").value === "" || document.getElementById("siglas").value === "" || document.getElementById("csc").value === "" || document.getElementById("Ref").value === "" || document.getElementById("Descrip").value === "" || document.getElementById("um").value === "" || document.getElementById("Cantidad").value === "" || document.getElementById("obs").value === "" || document.getElementById("bodega").value === "" || document.getElementById("Nit").value === "" || document.getElementById("descripB").value ==="" || document.getElementById("razon").value ==="" ){
     
-            fechar: document.getElementById("fecha").value,
-            prefijo: document.getElementById("siglas").value,
-            conse: document.getElementById("csc").value,
-            refer: document.getElementById("Ref").value,
-            descrip_pro: document.getElementById("Descrip").value,
-            unidad: document.getElementById("um").value,
-            centrada: document.getElementById("Cantidad").value,
-            obser: document.getElementById("obs").value,
-            bod: document.getElementById("bodega").value,
-            nites: document.getElementById("Nit").value
-
-          };
-
-      const respuesta = await fetch("http://localhost/apis/rest/insertarEntrada.php", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          //Convierte el objeto JavaScript a JSON.
-          body: JSON.stringify(data)
-      });
-
-      
-      const resultado = await respuesta.json();
-      const divMensaje = document.getElementById("mensaje");
-      const consecutivo = document.getElementById("csc");
-      const fecha = document.getElementById("fecha");
-      const observaciones = document.getElementById("obs");
-      const bodegas = document.getElementById("bodega");
-      const nites = document.getElementById("Nit");
-
-      
-
-          if (resultado.success) {
-                divMensaje.style.color = "Blue";
-                divMensaje.textContent = "✔️ Entrada registrada exitosamente";
-                document.getElementById("Ref").value = "";
-                document.getElementById("Descrip").value = "";
-                document.getElementById("um").value = "";
-                document.getElementById("Cantidad").value = "";
-                document.getElementById("Ref").focus();
-                consecutivo.readOnly = true;
-                fecha.readOnly = true;
-                document.getElementById("siglas").disabled = true;
-                observaciones.readOnly = true;
-                bodegas.readOnly = true;
-                nites.readOnly = true;               
-                ejecucion = true;
-                console.log(ejecucion);
-
-          }else {
-                divMensaje.style.color = "red";
-                divMensaje.textContent = "❌" + (resultado.error || resultado.mensaje); 
-                document.getElementById("fecha").focus();
-                  
+    divMensaje.style.color = "red";
+    divMensaje.textContent = "❌ Todos los campos son obligatorios";
+    document.getElementById("fecha").focus();
           
-          }
+  
 
+    // Se evalua el valor devuelto para tomar una acción
+  }else if (indicador !== 0 && indicador !== '0' &&  ejecucion === false) {
     
-      }
-      });
-    
+  // Se bloquea el registro si se cumple el condicional
+      const elemento = document.getElementById("siglas");          
+      divMensaje.style.color = "red"; // Aseguramos que se vea el texto de advertencia
+      divMensaje.textContent = "❌ ¡El documento "+document.getElementById("siglas").value+"-"+document.getElementById("csc").value+" ya existe en la base de datos";
+      elemento.value = "";
+      document.getElementById("csc").value = "";
+      document.getElementById("Ref").value = "";
+      document.getElementById("Descrip").value = "";
+      document.getElementById("descrip_doc").value = "";
+      document.getElementById("obs").value = "";
+      document.getElementById("um").value = "";
+      document.getElementById("Cantidad").value = "";          
+      elemento.focus();      
+
+      
+        
+  // De lo contrario se realiza el registro del movimiento en la base de datos
+  }else{
+
+
+        const data = {
+
+          fechar: document.getElementById("fecha").value,
+          prefijo: document.getElementById("siglas").value,
+          conse: document.getElementById("csc").value,
+          refer: document.getElementById("Ref").value,
+          descrip_pro: document.getElementById("Descrip").value,
+          unidad: document.getElementById("um").value,
+          centrada: document.getElementById("Cantidad").value,
+          obser: document.getElementById("obs").value,
+          bod: document.getElementById("bodega").value,
+          nites: document.getElementById("Nit").value
+
+        };
+
+    const respuesta = await fetch("http://localhost/apis/rest/insertarEntrada.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        //Convierte el objeto JavaScript a JSON.
+        body: JSON.stringify(data)
+    });
+
+  
+    const resultado = await respuesta.json();
+    const divMensaje = document.getElementById("mensaje");
+    const consecutivo = document.getElementById("csc");
+    const fecha = document.getElementById("fecha");
+    const observaciones = document.getElementById("obs");
+    const bodegas = document.getElementById("bodega");
+    const nites = document.getElementById("Nit");
+
+  
+
+        if (resultado.success) {
+              divMensaje.style.color = "Blue";
+              divMensaje.textContent = "✔️ Entrada registrada exitosamente";
+              document.getElementById("Ref").value = "";
+              document.getElementById("Descrip").value = "";
+              document.getElementById("um").value = "";
+              document.getElementById("Cantidad").value = "";
+              document.getElementById("Ref").focus();
+              consecutivo.readOnly = true;
+              fecha.readOnly = true;
+              document.getElementById("siglas").disabled = true;
+              observaciones.readOnly = true;
+              bodegas.readOnly = true;
+              nites.readOnly = true;               
+              ejecucion = true;
+              console.log(ejecucion);
+
+        }else {
+              divMensaje.style.color = "red";
+              divMensaje.textContent = "❌" + (resultado.error || resultado.mensaje); 
+              document.getElementById("fecha").focus();
+            
+      
+        }
+
+    }
+    });
+
  
 
 
