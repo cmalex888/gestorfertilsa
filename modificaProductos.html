@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/estilos.css">
+    <script src="js/navegacion.js"></script>
+    <title>Modificacion_productos</title>
+</head>
+<body>
+<div class="container-fluid">
+
+    <div class="container_nav">
+
+    <nav class="navbar navbar-expand-lg fixed-top" style="background-color: #0EADE6;" data-bs-theme="light">
+    <div class="container-fluid">
+    
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+     
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" id="resultado"></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" style="color: blue; font-weight: bold;" aria-current="page" href="./menu.html">Modulos</a>
+        </li>
+        <li class="nav-item">
+          <button onclick="avanzarPagina('index.html')" class="btn btn-primary" id="borrar" style="color: blue; font-weight: bold;">Salir</button>
+        </li>
+        
+    </div>
+  </div>
+</nav>
+</div>
+
+   
+    <div class="container">
+        
+    <div class="card-padre2">
+    <div class="card card-hijo2">
+    <div class="card-body">
+    <h5 class="card-title">MODIFICACIÓN DE PRODUCTOS</h5>
+    
+      
+    <form id="formpro">
+            
+            <div class="mb-3">  
+              <label for="Ref" class="form-label">Referencia</label>
+              <input type="text" class="form-control" id="ref" style="width: 200px;">
+              
+            </div>
+
+            <div class="mb-3">  
+              <label for="Descrip" class="form-label">Descripción</label>
+              <input type="text" class="form-control" id="descrip">
+              
+            </div>
+
+            <div class="mb-3">  
+              <label for="Unidad" class="form-label">U.M.</label>
+              <input type="text" class="form-control" id="um" style="width: 100px;">
+              
+            </div>
+            
+
+            <div class="mb-3">  
+              <label for="ValorUni" class="form-label">Valor unitario</label>
+              <input type="number" class="form-control" id="valor" min="1" style="width: 100px;">
+              
+            </div>
+            
+
+            <div class="centrar_boton">
+            <button type="submit" class="btn btn-primary">Actualizar</button>
+            <button type="reset" class="btn btn-danger">Limpiar</button>
+            <button href="javascript:void(0)" onclick="avanzarPagina('crudproductos.html')" type="reset" class="btn btn-success">Volver</button>
+            </div>
+
+    </form>
+    </div>
+    <div class="mensaje" id="mensaje"></div>
+</div>
+</div>
+</div>
+
+
+<script>
+
+     //Registro descripción producto con base en la referencia
+  
+  document.getElementById('ref').addEventListener('input', () => {
+    const Referen = document.getElementById('ref').value;
+
+    fetch('http://localhost/apis/rest/descripcion.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ Refer: Referen })
+    })
+
+
+    .then(res => res.json())
+    .then(data => {
+
+        const divMensaje = document.getElementById("mensaje");
+        if (data.success){
+          document.getElementById('descrip').value = data.referencia.descripcion;
+          document.getElementById('um').value = data.referencia.unidadmedida;
+          document.getElementById('valor').value = data.referencia.valoruni;
+          divMensaje.textContent = "";
+
+        }else{
+          document.getElementById('descrip').value = "";
+          document.getElementById('um').value = " ";
+          document.getElementById('valor').value = " ";
+          
+        }
+        
+    })
+    .catch(error => console.error('Error:', error));
+  });
+
+
+
+
+  //Modificación referencia
+   
+  document.getElementById("formpro").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const divMensaje = document.getElementById("mensaje");
+  
+  if(document.getElementById("ref").value === "" || document.getElementById("descrip").value === "" || document.getElementById("um").value === "" ||document.getElementById("valor").value === ""){
+    divMensaje.style.color = "red";
+    divMensaje.textContent = "❌ Todos los campos son obligatorios";
+    document.getElementById("ref").focus();
+  }else{
+
+
+  // 1. Recolectar los datos del formulario
+  const data = {
+    refer: document.getElementById("ref").value,
+    descript: document.getElementById("descrip").value,
+    unidad: document.getElementById("um").value,
+    val: document.getElementById("valor").value         
+  };
+
+  try {
+    // 2. Realizar la petición PUT al servidor PHP
+    const respuesta = await fetch("http://localhost/apis/rest/actualizarProducto.php", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    });
+
+    // 3. Validar si el servidor respondió correctamente
+    if (!respuesta.ok) {
+      throw new Error(`Error en la petición: ${respuesta.status}`);
+    }
+
+    // 4. Obtener los datos de la respuesta (JSON) directamente con await
+    const resultado = await respuesta.json();
+    console.log('Recurso actualizado con éxito:', resultado);
+
+    // 5. Limpiar el formulario SÓLO si la petición fue exitosa
+    document.getElementById("ref").value = "";
+    document.getElementById("descrip").value = "";
+    document.getElementById("um").value = "";
+    document.getElementById("valor").value = "";
+    divMensaje.style.color = "green";
+    divMensaje.textContent = "Producto actualizado";
+    document.getElementById("ref").focus();
+
+  } catch (error) {
+    // Captura cualquier error de red o del bloque try
+    console.error('Hubo un problema con la petición PUT:', error);
+  }
+  }
+});
+
+
+
+
+document.getElementById("formpro").addEventListener("reset", async (e) => {
+  e.preventDefault();
+
+        const divMensaje = document.getElementById("mensaje");
+        divMensaje.textContent = "";
+        document.getElementById("ref").value = "";
+        document.getElementById("descrip").value = "";
+        document.getElementById("um").value = "";
+        document.getElementById("valor").value = ""
+
+});
+
+
+// 1. Leer el dato registrado en index
+  const datoRecibido = localStorage.getItem("datoGuardado");
+  
+  // 2. Cargar dato del index en el ancla cuyo id es resultado
+  document.getElementById("resultado").textContent = datoRecibido;
+
+  // 3. Borrar información del usuario una vez se hace click en el enlace salir
+  const ancla = document.getElementById('resultado');
+  const borrar = document.getElementById('borrar');
+ 
+  borrar.addEventListener('click', function(evento) { 
+      evento.preventDefault();       
+      
+      //Se borra el texto visualmente
+      ancla.textContent = '';
+      
+      //Se borra el dato de la memoria del navegador
+      localStorage.removeItem("datoGuardado"); 
+      
+      //Se redirige a index.html
+      window.location.href = "index.html";
+  });
+
+
+
+
+
+</script>    
+
+</body>
+</html>

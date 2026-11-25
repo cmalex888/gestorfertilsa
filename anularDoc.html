@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/estilos.css">
+    <script src="js/navegacion.js"></script>
+    <title>anular</title>
+</head>
+<body>
+<div class="container-fluid">
+
+    <div class="container_nav">
+
+    <nav class="navbar navbar-expand-lg fixed-top" style="background-color: #0EADE6;" data-bs-theme="light">
+    <div class="container-fluid">
+    
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" id="resultado"></a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link active" style="color: blue; font-weight: bold;" aria-current="page" href="./menu.html">Modulos</a>
+        </li>
+        <li class="nav-item">
+          <button onclick="avanzarPagina('index.html')" class="btn btn-primary" id="borrar" style="color: blue; font-weight: bold;">Salir</a>
+        </li>
+        
+    </div>
+  </div>
+</nav>
+</div>
+
+   
+    <div class="container">
+        
+    <div class="card-padre2">
+    <div class="card card-hijo2">
+    <div class="card-body">
+    <h5 class="card-title">Anular Documentos</h5>
+    
+      
+    <form id="formanular">           
+            
+      <div class="mb-3"> 
+      
+                    
+      
+      <div class="row">
+
+        <div class="col-4 col-sm-4 col-md-6">  
+          <label for="Tipo" class="form-label">Tipo_Doc</label>
+          
+          <select id="siglas" class="form-select">
+            <option value=""></option>
+          </select>
+                                      
+        </div>
+
+        
+        <div class="col-4 col-sm-4 col-md-6">  
+          <label for="Descrip" class="form-label">Consecutivo</label>
+          <input type="text" class="form-control" id="csc">
+      
+        </div>
+    
+
+      </div>
+
+      
+    
+      <br>
+
+      <div class="centrar_boton">
+      <button type="submit" class="btn btn-primary">Anular</button>
+      <button type="reset" class="btn btn-danger">Limpiar</button>
+      </div>
+
+    </form>
+    </div>
+    <div class="mensaje" id="mensaje"></div>
+</div>
+</div>
+</div>
+    
+<br>
+
+<script>
+
+//Configuración menú superior de esta pagina.
+
+  // 1. Leer el dato registrado en index
+  const datoRecibido = localStorage.getItem("datoGuardado");
+  
+  // 2. Cargar dato del index en el ancla cuyo id es resultado
+  document.getElementById("resultado").textContent = datoRecibido;
+
+  // 3. Borrar información del usuario una vez se hace click en el enlace salir
+  const ancla = document.getElementById('resultado');
+  const borrar = document.getElementById('borrar');
+ 
+  borrar.addEventListener('click', function(evento) { 
+      evento.preventDefault();       
+      
+      //Se borra el texto visualmente
+      ancla.textContent = '';
+      
+      //Se borra el dato de la memoria del navegador
+      localStorage.removeItem("datoGuardado"); 
+      
+      //Se redirige a index.html
+      window.location.href = "index.html";
+  });
+
+
+
+  // Código para lista desplegable del tipo de documento
+  const select = document.getElementById('siglas');
+    
+  // Variable global para almacenar los productos de la API
+  let listaDocumentos = [];
+
+  // Función para obtener los datos de la API al cargar la página
+  
+  async function cargarDocumentos() {
+    try {
+      // Reemplaza con la URL real de tu API
+      const respuesta = await fetch('http://localhost/apis/rest/ListaDocumentos.php'); 
+      listaDocumentos = await respuesta.json(); 
+      
+      // Limpiar el select y agregar la opción por defecto
+      select.innerHTML = '<option value=""></option>';
+      
+      // Llenar el combobox con los datos de la API
+      listaDocumentos.forEach(producto => {
+        const option = document.createElement('option');
+        option.value = producto.sigla; // Guardamos sigla valor
+        option.textContent = producto.sigla; // Mostramos la sigla del documento.
+        select.appendChild(option);
+      });
+    } catch (error) {
+      console.error('Error al cargar la API:', error);
+      select.innerHTML = '<option value="">Error al cargar productos</option>';
+    }
+  }
+
+  // Llamar a la función al iniciar
+  cargarDocumentos();
+
+
+// identificar si un documento esta registrado en la base de datos movimientos
+
+  async function revisarDocumentos(){
+
+    let indicador = '0';
+
+    if (document.getElementById("siglas").value ==="" || document.getElementById("csc").value ===""){
+        indicador = '0';
+        console.log("Validación fallida: Uno de los campos está vacío. Indicador:", indicador);
+        return indicador;
+    
+    
+    }else{
+
+        
+        const data = {
+           
+          prefijo: document.getElementById("siglas").value,
+          conse: document.getElementById("csc").value
+    
+        };
+
+        const respuesta = await fetch("http://localhost/apis/rest/consultaDocumento.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        //Convierte el objeto JavaScript a JSON.
+        body: JSON.stringify(data)
+        });
+
+                     
+        if (!respuesta.ok) {
+            throw new Error('Error en la respuesta de la API');
+        }
+        
+        //else{
+
+            const datos = await respuesta.json(); 
+            
+            console.log("Respuesta completa de la API (JSON):", datos);
+            
+            //document.getElementById("Cantidad").value = datos.codigo.exiteregistro ;
+            indicador = parseInt(datos.codigo.exiteregistro);
+            console.log("Valor final de indicador:", indicador);
+            return indicador;
+
+        //}
+
+    }
+  };
+  
+      document.getElementById("siglas").addEventListener("change", revisarDocumentos);
+
+      // Usamos 'input' para que detecte el cambio en tiempo real mientras escriben el consecutivo
+      document.getElementById("csc").addEventListener("input", revisarDocumentos);
+
+
+// Función para identificar saldo negativo antes de la anulación
+
+async function revisarNegativo(){
+
+    let negativo = '0';
+
+    if (document.getElementById("siglas").value ==="" || document.getElementById("csc").value ===""){
+        negativo = '0';
+        console.log("Validación fallida: Uno de los campos está vacío. Indicador:", negativo);
+        return negativo;
+    
+    
+    }else{
+
+        
+        const data = {
+           
+          prefijo: document.getElementById("siglas").value,
+          conse: document.getElementById("csc").value
+    
+        };
+
+        const respuesta = await fetch("http://localhost/apis/rest/consultaMovimientosDocumentos.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        //Convierte el objeto JavaScript a JSON.
+        body: JSON.stringify(data)
+        });
+
+                     
+        if (!respuesta.ok) {
+            throw new Error('Error en la respuesta de la API');
+        }
+        
+        //else{
+
+            const datos = await respuesta.json(); 
+            
+            console.log("Respuesta completa de la API (JSON):", datos);
+            
+            //document.getElementById("Cantidad").value = datos.codigo.exiteregistro ;
+            negativo = parseInt(datos.total_registros);
+            console.log("Valor final de indicador:", negativo);
+            return negativo;
+
+        //}
+
+    }
+  };
+  
+      document.getElementById("siglas").addEventListener("change", revisarNegativo);
+
+      // Usamos 'input' para que detecte el cambio en tiempo real mientras escriben el consecutivo
+      document.getElementById("csc").addEventListener("input", revisarNegativo);
+
+        
+
+//Eliminar documento
+
+  
+  document.getElementById("formanular").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+  const indicador = await revisarDocumentos();
+  const negativo = await revisarNegativo();
+  const divMensaje = document.getElementById("mensaje");
+
+  if(document.getElementById("siglas").value === "" || document.getElementById("csc").value === ""  ){
+    
+    divMensaje.style.color = "red";
+    divMensaje.textContent = "❌ Todos los campos son obligatorios";
+    document.getElementById("siglas").focus();
+
+
+  
+   // Se evalua el valor devuelto para tomar una acción
+  }else if (indicador === 0 || indicador === '0' ) {
+    
+  // Se bloquea el registro si se cumple el condicional
+      const elemento = document.getElementById("siglas");          
+      divMensaje.style.color = "red"; // Aseguramos que se vea el texto de advertencia
+      divMensaje.textContent = "❌ ¡El documento "+document.getElementById("siglas").value+"-"+document.getElementById("csc").value+" NO existe en la base de datos, por favor digitar otro documento";
+      elemento.value = "";
+      document.getElementById("csc").value = "";
+      document.getElementById("descrip_doc").value = "";               
+      elemento.focus();      
+
+  
+  }else if (negativo !== 0 && negativo !== '0'){
+    const elemento = document.getElementById("siglas");          
+      divMensaje.style.color = "red"; // Aseguramos que se vea el texto de advertencia
+      divMensaje.textContent = "❌ ¡El documento "+document.getElementById("siglas").value+"-"+document.getElementById("csc").value+" NO se puede anular, genera negativos";
+      elemento.value = "";
+      document.getElementById("csc").value = "";
+      document.getElementById("descrip_doc").value = "";               
+      elemento.focus();
+
+
+
+
+
+  // De lo contrario se realiza el registro del movimiento en la base de datos
+   
+  
+   
+  }else{
+
+    const validacion = confirm("¿Estás seguro de que deseas continuar?");
+
+    if(validacion){ 
+
+        const data = {
+
+              siglas: document.getElementById("siglas").value,
+              csc: document.getElementById("csc").value
+              
+            };
+
+        const respuesta = await fetch("http://localhost/apis/rest/borrarMovimientos.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            //Convierte el objeto JavaScript a JSON.
+            body: JSON.stringify(data)
+        });
+
+      
+        const resultado = await respuesta.json();
+        const divMensaje = document.getElementById("mensaje");
+        const consecutivo = document.getElementById("siglas");
+        const bodegas = document.getElementById("csc");
+      
+
+            if (resultado.success) {
+                  divMensaje.style.color = "Blue";
+                  divMensaje.textContent = "✔️ Movimiento anulado exitosamente";
+                  document.getElementById("siglas").value = "";
+                  document.getElementById("csc").value = "";
+                  document.getElementById("descrip_doc").value = "";
+                  document.getElementById("siglas").focus();
+                  
+            }else {
+                  divMensaje.style.color = "red";
+                  divMensaje.textContent = "❌" + (resultado.error || resultado.mensaje); 
+                  document.getElementById("siglas").focus();            
+            
+            }
+
+
+
+        }else{
+        alert("Por favor revise nuevamente o haga click en el botón limpiar");
+        }
+    }
+     
+
+  });
+
+  
+
+  document.getElementById("formanular").addEventListener("reset", async (e) => {
+  e.preventDefault();
+
+        const divMensaje = document.getElementById("mensaje");
+        divMensaje.textContent = "";
+        document.getElementById("siglas").value = "";
+        document.getElementById("csc").value = "";
+        document.getElementById("descrip_doc").value = "";
+        document.getElementById("siglas").focus();
+        
+
+});
+
+ 
+
+
+</script>    
+</body>
+</html>

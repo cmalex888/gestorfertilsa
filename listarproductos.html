@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/reportes.css">
+    <script src="js/navegacion.js"></script> 
+    <title>Listado_productos</title>
+</head>
+<body>
+
+<div>
+        <h1>LISTADO DE PRODUCTOS</h1>
+</div>
+
+<div class="contenedor">
+
+    <div class = "card">
+      <br>  
+          
+      <div>   <button id = "buscar" type="submit" class="btn btn-primary" onclick="consultarInventario()">Cargar</button>
+              <button id="btn-exportar" class="btn btn-primary">📊 Exportar a Excel</button>
+              <button id="limpiar" type="reset" class="btn btn-danger">Limpiar</button>
+              <a href="javascript:void(0)" onclick="avanzarPagina('crudproductos.html')" id="volver" type="reset" class="btn btn-success">Volver</a>
+      </div>
+
+    </div>
+
+    <div>
+      <table id = "tabla">
+
+        <thead>
+            <tr><th colspan="4"><h5>Listado de Productos</h5></th></tr>
+            <tr>
+                <th>Referencia</th>
+                <th>Descripcion</th>
+                <th>U.M.</th>
+                <th>Valor</th>
+                           
+            </tr>
+        </thead>
+
+        
+        <tbody id="datos-tabla">
+            <tr>
+                <td colspan="4">Introduce un código de bodega y haz clic en Cargar.</td>
+            </tr>
+        </tbody>
+
+
+      </table>
+    </div>
+
+</div>
+
+    
+    
+
+
+     
+<div class="mensaje" id="mensaje"></div>
+
+
+<script>
+
+//Codigo para el botón cargar
+
+const urlAPI = 'http://localhost/apis/rest/listarProductos.php';
+
+async function consultarInventario() {  
+  const tabla = document.getElementById('datos-tabla');
+  const btnExportar = document.getElementById('btn-exportar');
+  
+  tabla.innerHTML = '<tr><td colspan="4">Buscando información en el servidor...</td></tr>';
+  btnExportar.style.display = 'none'; // Ocultar botón de exportar durante la nueva búsqueda
+
+  const parametrosPost = {};
+
+  try {
+    const respuesta = await fetch(urlAPI, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(parametrosPost)
+    });
+
+    const resultado = await respuesta.json();
+    tabla.innerHTML = '';
+
+    if (Array.isArray(resultado) && resultado.length > 0) {
+    resultado.forEach(producto => {
+        const fila = document.createElement('tr');
+
+        // Creamos y asignamos las 4 celdas
+        const campos = [
+          producto.referencia,
+          producto.descripcion,
+          producto.unidadmedida,          
+          producto.valoruni
+        ];
+
+        campos.forEach(texto => {
+          const celda = document.createElement('td');
+          celda.textContent = texto;
+          fila.appendChild(celda);
+        });
+
+        tabla.appendChild(fila);
+      });
+
+      // Muestra el botón de exportar si encontramos registros
+      btnExportar.style.display = 'inline-block';
+
+    } else {
+      const mensajeError = resultado.mensaje || 'No se encontraron productos.';
+      tabla.innerHTML = `<tr><td colspan="4" style="color:orange;">${mensajeError}</td></tr>`;
+    }
+
+  } catch (error) {
+    console.error('Error en la petición POST:', error);
+    tabla.innerHTML = `<tr><td colspan="4" style="color:red;">Error crítico al conectar con el servidor.</td></tr>`;
+  }
+
+  
+}
+
+
+// botón para restablecer toda la interfaz
+function limpiarPantalla() {
+  //const inputBodega = document.getElementById('bodega');
+  //const inputDescrip = document.getElementById('descripB');
+  const tabla = document.getElementById('datos-tabla');
+  const btnExportar = document.getElementById('btn-exportar');
+
+  
+  if (btnExportar) btnExportar.style.display = 'none';
+  
+  if (tabla) {
+    tabla.innerHTML = `
+      <tr>
+        <td colspan="4" style="color: gray;">Hacer click en el botón cargar.</td>
+      </tr>
+    `;
+  }
+  console.log("Interfaz restablecida correctamente.");
+}
+
+
+// Función encargada de transformar la tabla HTML a un archivo descargable
+function exportarAExcel() {
+  const tabla = document.getElementById('tabla');
+  const filas = tabla.querySelectorAll('tr');
+  let contenidoCsv = "";
+
+  filas.forEach(fila => {
+    const celdas = fila.querySelectorAll('th, td');
+    const datosFila = Array.from(celdas).map(celda => {
+      // Limpiamos comillas del texto y envolvemos el valor entre comillas dobles para evitar errores con las comas
+      let texto = celda.textContent.replace(/"/g, '""');
+      return `"${texto}"`;
+    });
+    // Unimos las celdas usando punto y coma (;), que es el separador por defecto de Excel en español
+    contenidoCsv += datosFila.join(";") + "\r\n";
+  });
+
+  // Agregar el BOM UTF-8 (\uFEFF) para que Excel reconozca correctamente las tildes y la letra Ñ
+  const blob = new Blob(["\uFEFF" + contenidoCsv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  
+  // Crear un enlace temporal para forzar la descarga en el navegador
+  const enlaceDescarga = document.createElement("a");
+  enlaceDescarga.href = url;
+  
+  // Nombre del archivo final
+  //const codigoBodega = document.getElementById('bodega').value.trim() || 'inventario';
+  enlaceDescarga.setAttribute("download", `Lista_productos.csv`);
+  
+  document.body.appendChild(enlaceDescarga);
+  enlaceDescarga.click();
+  document.body.removeChild(enlaceDescarga);
+}
+
+// Configurar los escuchadores de eventos
+  document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('buscar').addEventListener('click', consultarInventario);
+  document.getElementById('limpiar').addEventListener('click', limpiarPantalla); // Escuchador de limpiar
+  document.getElementById('btn-exportar').addEventListener('click', exportarAExcel);
+  
+});
+
+
+
+
+</script>
+
+
+    
+</body>
+</html>

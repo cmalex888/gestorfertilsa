@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
-    <link rel="stylesheet" href="css/reportes.css"> 
+    <link rel="stylesheet" href="css/reportes.css">
+    <script src="js/navegacion.js"></script> 
     <title>reporte_saldos_al_corte</title>
 </head>
 <body>
@@ -58,7 +59,7 @@
             <button id = "buscar" type="submit" class="btn btn-primary">Cargar</button>
             <button id="btn-exportar" class="btn btn-primary">📊 Exportar a Excel</button>
             <button id="limpiar" type="reset" class="btn btn-danger">Limpiar</button>
-            <a href="./reportes.html" id="volver" type="reset" class="btn btn-danger">Volver</a>
+            <a href="javascript:void(0)" onclick="avanzarPagina('reportes.html')" id="volver" type="reset" class="btn btn-success">Volver</a>
     </div>
 
     

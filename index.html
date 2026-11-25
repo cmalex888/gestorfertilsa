@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
     <link rel="stylesheet" href="css/estilos.css">
+    <script src="js/navegacion.js"></script>
     <title>incio</title>
 
 </head>
@@ -39,7 +40,7 @@
             <button type="submit" class="btn btn-primary">Validar</button>
             <button type="reset" class="btn btn-danger">Limpiar</button>
             </div>
-            <a href="registro.html">Registrarse</a>
+            <a href="javascript:void(0)" onclick="avanzarPagina('registro.html')">Registrarse</a>
     </form>
             
     </div>
@@ -52,6 +53,10 @@
 
 
 <script>
+
+
+// Registrar credenciales
+
        
     document.getElementById("formulario").addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -73,6 +78,7 @@
     if (data.success) {
         divMensaje.style.color = "green";
         divMensaje.textContent = "✔️ Login exitoso. Bienvenido " + data.usuario.nombre;
+        localStorage.setItem("datoGuardado", "Hola " + data.usuario.nombre + "!");
         window.location.href = "menu.html";
         
     } else {
@@ -81,19 +87,7 @@
     }
     });
 
-    function enviarDato() {
-            
-        // 1. Obtener el valor del input
-            const valor = document.getElementById("mensaje").value;
-    
-            // 2. Guardarlo en localStorage con un nombre clave
-            localStorage.setItem("datoGuardado", valor);
-    
-            // 3. Cambiar a la segunda página
-            window.location.href = "menu.html";
-    }
-    
-
+ 
 
 
 </script>

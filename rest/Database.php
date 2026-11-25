@@ -357,7 +357,243 @@ class Database {
         }
     }
 
+    //MÉTODO PARA ACTUALIZAR INFORMACIÓN DE UN PRODUCTO CREADO
 
+    public function actualizarProductos($descripcion, $unidad, $valor, $refer) {
+        
+        try{
+            $sql = "UPDATE productos SET descripcion=?,unidadmedida =?,valoruni =? WHERE referencia =?";
+            $stmt = $this->conn->prepare($sql);
+            $resultado = $stmt->execute([$descripcion, $unidad, $valor, $refer]);
+            return $resultado;
+        
+        }catch (PDOException $e) {
+        // Es buena práctica manejar errores si la base de datos falla
+        error_log("Error en actualizarProductos: " . $e->getMessage());
+        return false;
+        }
+           
+    }
+
+    public function borraProductos($refer) {
+        
+        try{
+            $sql = "DELETE FROM productos WHERE referencia =?";
+            $stmt = $this->conn->prepare($sql);
+            $resultado = $stmt->execute([$refer]);
+            return $resultado;
+        
+        }catch (PDOException $e) {
+        // Es buena práctica manejar errores si la base de datos falla
+        error_log("Error al borrar el producto: " . $e->getMessage());
+        return false;
+        }
+           
+    }
+
+    //OBTENER LISTADO DE PRODUCTO
+    public function listarProductos(){
+        try {
+            // Primero aseguramos que la conexión exista
+            if ($this->conn == null) {
+                $this->conectar();
+            }
+                
+            // Consulta sql
+            $stmt = $this->conn->query("SELECT referencia, descripcion, unidadmedida, valoruni FROM productos ORDER BY descripcion");
+            $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+            // Enviar datos en formato JSON
+            echo json_encode($resultados);
+        } catch (Exception $e) {
+            echo json_encode(['error' => $e->getMessage()]);
+        }
+
+    }
+
+    //MÉTODO PARA ACTUALIZAR INFORMACIÓN DE UN CLIENTE CREADO
+
+    public function actualizarClientes($descripcion, $nit) {
+        
+        try{
+            $sql = "UPDATE cliente SET razon =? WHERE nit =?";
+            $stmt = $this->conn->prepare($sql);
+            $resultado = $stmt->execute([$descripcion, $nit]);
+            return $resultado;
+        
+        }catch (PDOException $e) {
+        // Es buena práctica manejar errores si la base de datos falla
+        error_log("Error en actualizar cliente: " . $e->getMessage());
+        return false;
+        }
+           
+    }
+
+    public function borraCliente($nit) {
+        
+        try{
+            $sql = "DELETE FROM cliente WHERE nit =?";
+            $stmt = $this->conn->prepare($sql);
+            $resultado = $stmt->execute([$nit]);
+            return $resultado;
+        
+        }catch (PDOException $e) {
+        // Es buena práctica manejar errores si la base de datos falla
+        error_log("Error al borrar el cliente: " . $e->getMessage());
+        return false;
+        }
+           
+    }
+
+
+    //OBTENER LISTADO DE PRODUCTO
+    public function listarClientes(){
+        try {
+            // Primero aseguramos que la conexión exista
+            if ($this->conn == null) {
+                $this->conectar();
+            }
+                
+            // Consulta sql
+            $stmt = $this->conn->query("SELECT nit, razon FROM cliente ORDER BY razon");
+            $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+            // Enviar datos en formato JSON
+            echo json_encode($resultados);
+        } catch (Exception $e) {
+            echo json_encode(['error' => $e->getMessage()]);
+        }
+
+    }
+
+
+    //MÉTODO PARA ACTUALIZAR INFORMACIÓN DE UN CLIENTE CREADO
+
+    public function actualizarBodegas($descripb, $direcb, $ciudadbg, $phoneb, $codigob) {
+        
+        try{
+            $sql = "UPDATE bodega SET nombre =?, direccion =?, ciudad =?, telefono =? WHERE codigo =?";
+            $stmt = $this->conn->prepare($sql);
+            $resultado = $stmt->execute([$descripb, $direcb, $ciudadbg, $phoneb, $codigob]);
+            return $resultado;
+        
+        }catch (PDOException $e) {
+        // Es buena práctica manejar errores si la base de datos falla
+        error_log("Error en actualizar bodega: " . $e->getMessage());
+        return false;
+        }
+           
+    }
+
+    //MÉTODO PARA ELIMINAR INFORMACIÓN DE UN CLIENTE CREADO
+
+    public function borraBodega($codigo) {
+        
+        try{
+            $sql = "DELETE FROM bodega WHERE codigo =?";
+            $stmt = $this->conn->prepare($sql);
+            $resultado = $stmt->execute([$codigo]);
+            return $resultado;
+        
+        }catch (PDOException $e) {
+        // Es buena práctica manejar errores si la base de datos falla
+        error_log("Error al borrar la bodega: " . $e->getMessage());
+        return false;
+        }
+           
+    }
+
+
+
+    //OBTENER LISTADO DE BODEGAS
+    public function listarBodegas(){
+        try {
+            // Primero aseguramos que la conexión exista
+            if ($this->conn == null) {
+                $this->conectar();
+            }
+                
+            // Consulta sql
+            $stmt = $this->conn->query("SELECT codigo, nombre, direccion, ciudad, telefono FROM bodega ORDER BY nombre");
+            $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+            // Enviar datos en formato JSON
+            echo json_encode($resultados);
+        } catch (Exception $e) {
+            echo json_encode(['error' => $e->getMessage()]);
+        }
+
+    }
+
+
+
+    //MÉTODO PARA CONSULTAR LISTADO DE INVENTARIO POR UNA BODEGA
+    public function consultarDisponibleAnulacion() {
+        try {
+            $sql = "SELECT productos_referencia, bodega_codigo, (SUM(cantidade)-SUM(cantidads)) AS saldo FROM movimientos GROUP BY productos_referencia, productos_descrip, productos_unidad, bodega_codigo HAVING (SUM(cantidade)-SUM(cantidads)) > 0 ORDER BY productos_descrip ASC";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute([]);
+            //Devuelve un array con todas las filas encontradas
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+
+    //MÉTODO PARA CONSULTAR MOVIMIENTOS POR DOCUMENTO
+
+    public function consultarDocumentoAnulacion($sigla, $consecutivo) {
+        try {
+            $sql = "SELECT productos_referencia, bodega_codigo, (SUM(cantidade)-SUM(cantidads)) AS saldo FROM movimientos WHERE documentos_sigla = ? AND consecutivo = ? GROUP BY productos_referencia, bodega_codigo";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute([$sigla, $consecutivo]);
+            //Devuelve un array con todas las filas encontradas
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    //MÉTODO PARA ELIMINAR INFORMACIÓN MOVIMIENTO DE INVENTARIO
+
+    public function borraMovimiento($sigla, $csc) {
+        
+        try{
+            $sql = "DELETE FROM movimientos WHERE documentos_sigla = ? AND consecutivo = ?";
+            $stmt = $this->conn->prepare($sql);
+            $resultado = $stmt->execute([$sigla, $csc]);
+            return $resultado;
+        
+        }catch (PDOException $e) {
+        // Es buena práctica manejar errores si la base de datos falla
+        error_log("Error al borrar el movimiento: " . $e->getMessage());
+        return false;
+        }
+           
+    }
+
+    //MÉTODO PARA CARGAR INFORMACIÓN A LISTA DESPLEGABLE DEL FORMULARIO DE ANULACIÓN DOCUMENTOS
+    public function respuestAnular(){
+        try {
+            // Primero aseguramos que la conexión exista
+            if ($this->conn == null) {
+                $this->conectar();
+            }
+                
+            // Consulta sql
+            $stmt = $this->conn->query("SELECT DISTINCT sigla FROM documentos WHERE tipo = 'Entrada' OR tipo = 'Salida'");
+            $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+            // Enviar datos en formato JSON
+            echo json_encode($resultados);
+        } catch (Exception $e) {
+            echo json_encode(['error' => $e->getMessage()]);
+        }
+
+    }
 
 
 
